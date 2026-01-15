@@ -1,0 +1,276 @@
+[Mon Oct  6 08:11:51 2025] PHP 8.3.26 Development Server (http://127.0.0.1:8000) started
+[Mon Oct  6 08:23:24 2025] 127.0.0.1:57585 Accepted
+[Mon Oct  6 08:23:24 2025] 127.0.0.1:57585 [302]: GET /
+[Mon Oct  6 08:23:24 2025] 127.0.0.1:57585 Closing
+[Mon Oct  6 08:23:24 2025] 127.0.0.1:49369 Accepted
+[Mon Oct  6 08:23:24 2025] 127.0.0.1:49369 [200]: GET /login.php
+[Mon Oct  6 08:23:24 2025] 127.0.0.1:49369 Closing
+[Mon Oct  6 08:23:24 2025] 127.0.0.1:58825 Accepted
+[Mon Oct  6 08:23:24 2025] 127.0.0.1:58825 [404]: GET /favicon.ico - No such file or directory
+[Mon Oct  6 08:23:24 2025] 127.0.0.1:58825 Closing
+[Mon Oct  6 08:48:59 2025] 127.0.0.1:58551 Accepted
+[Mon Oct  6 08:49:01 2025] 127.0.0.1:58551 [302]: POST /login.php
+[Mon Oct  6 08:49:01 2025] 127.0.0.1:58551 Closing
+[Mon Oct  6 08:49:01 2025] 127.0.0.1:62537 Accepted
+[Mon Oct  6 08:49:04 2025] 127.0.0.1:62537 [200]: GET /dashboard.php
+[Mon Oct  6 08:49:04 2025] 127.0.0.1:62537 Closing
+[Mon Oct  6 08:49:09 2025] 127.0.0.1:54444 Accepted
+[Mon Oct  6 08:49:10 2025] 127.0.0.1:54444 [200]: GET /equipamentos.php
+[Mon Oct  6 08:49:10 2025] 127.0.0.1:54444 Closing
+[Mon Oct  6 08:49:10 2025] 127.0.0.1:60236 Accepted
+[Mon Oct  6 08:49:13 2025] 127.0.0.1:60236 [200]: GET /entrada_cadastrar.php
+[Mon Oct  6 08:49:13 2025] 127.0.0.1:60236 Closing
+[Mon Oct  6 08:49:13 2025] 127.0.0.1:49227 Accepted
+[Mon Oct  6 08:49:20 2025] 127.0.0.1:49227 [200]: GET /saida_registrar.php
+[Mon Oct  6 08:49:20 2025] 127.0.0.1:49227 Closing
+[Mon Oct  6 08:49:20 2025] 127.0.0.1:65386 Accepted
+[Mon Oct  6 08:49:26 2025] 127.0.0.1:65386 [200]: GET /dashboard.php
+[Mon Oct  6 08:49:26 2025] 127.0.0.1:65386 Closing
+[Mon Oct  6 08:49:26 2025] 127.0.0.1:61802 Accepted
+[Mon Oct  6 08:49:26 2025] 127.0.0.1:55264 Accepted
+[Mon Oct  6 08:49:29 2025] 127.0.0.1:61802 [200]: GET /dashboard.php
+[Mon Oct  6 08:49:29 2025] 127.0.0.1:61802 Closing
+[Mon Oct  6 08:50:00 2025] 127.0.0.1:55264 [200]: GET /equipamentos.php
+[Mon Oct  6 08:50:00 2025] 127.0.0.1:55264 Closing
+[Mon Oct  6 08:50:00 2025] 127.0.0.1:49310 Accepted
+[Mon Oct  6 08:50:03 2025] 127.0.0.1:49310 [200]: GET /entrada_cadastrar.php
+[Mon Oct  6 08:50:03 2025] 127.0.0.1:49310 Closing
+[Mon Oct  6 08:50:03 2025] 127.0.0.1:54746 Accepted
+[Mon Oct  6 08:50:33 2025] 127.0.0.1:54746 [200]: GET /usuarios.php
+[Mon Oct  6 08:50:33 2025] 127.0.0.1:54746 Closing
+[Mon Oct  6 08:50:33 2025] 127.0.0.1:64963 Accepted
+[Mon Oct  6 08:50:38 2025] 127.0.0.1:64963 [200]: GET /configuracoes.php
+[Mon Oct  6 08:50:38 2025] 127.0.0.1:64963 Closing
+[Mon Oct  6 08:50:38 2025] 127.0.0.1:63382 Accepted
+[Mon Oct  6 08:53:10 2025] 127.0.0.1:63382 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Oct  6 08:53:10 2025] 127.0.0.1:63382 Closing
+[Mon Oct  6 08:54:58 2025] 127.0.0.1:49704 Accepted
+[Mon Oct  6 08:54:58 2025] 127.0.0.1:63756 Accepted
+[Mon Oct  6 08:54:58 2025] 127.0.0.1:49704 [302]: GET /
+[Mon Oct  6 08:54:58 2025] 127.0.0.1:49704 Closing
+[Mon Oct  6 08:54:58 2025] 127.0.0.1:63756 [200]: GET /login.php
+[Mon Oct  6 08:54:58 2025] 127.0.0.1:63756 Closing
+[Mon Oct  6 08:54:59 2025] 127.0.0.1:49820 Accepted
+[Mon Oct  6 08:54:59 2025] 127.0.0.1:49820 [404]: GET /favicon.ico - No such file or directory
+[Mon Oct  6 08:54:59 2025] 127.0.0.1:49820 Closing
+[Mon Oct  6 08:55:00 2025] 127.0.0.1:51615 Accepted
+[Mon Oct  6 08:55:01 2025] 127.0.0.1:51615 [302]: POST /login.php
+[Mon Oct  6 08:55:01 2025] 127.0.0.1:51615 Closing
+[Mon Oct  6 08:55:01 2025] 127.0.0.1:51112 Accepted
+[Mon Oct  6 08:55:04 2025] 127.0.0.1:51112 [200]: GET /dashboard.php
+[Mon Oct  6 08:55:04 2025] 127.0.0.1:51112 Closing
+[Mon Oct  6 08:56:20 2025] 127.0.0.1:65135 Accepted
+[Mon Oct  6 08:56:20 2025] 127.0.0.1:51601 Accepted
+[Mon Oct  6 08:56:21 2025] 127.0.0.1:51601 [200]: GET /equipamentos.php
+[Mon Oct  6 08:56:21 2025] 127.0.0.1:51601 Closing
+[Mon Oct  6 08:56:25 2025] 127.0.0.1:61530 Accepted
+[Mon Oct  6 08:56:28 2025] 127.0.0.1:65135 [200]: GET /dashboard.php
+[Mon Oct  6 08:56:28 2025] 127.0.0.1:65135 Closing
+[Mon Oct  6 08:56:43 2025] 127.0.0.1:53424 Accepted
+[Mon Oct  6 08:56:44 2025] 127.0.0.1:61530 [200]: GET /equipamentos.php
+[Mon Oct  6 08:56:44 2025] 127.0.0.1:61530 Closing
+[Mon Oct  6 08:56:48 2025] 127.0.0.1:53424 [200]: GET /entrada_cadastrar.php
+[Mon Oct  6 08:56:48 2025] 127.0.0.1:53424 Closing
+[Mon Oct  6 08:56:48 2025] 127.0.0.1:58403 Accepted
+[Mon Oct  6 08:57:05 2025] 127.0.0.1:51565 Accepted
+[Mon Oct  6 08:57:06 2025] 127.0.0.1:58403 [200]: GET /saida_registrar.php
+[Mon Oct  6 08:57:06 2025] 127.0.0.1:58403 Closing
+[Mon Oct  6 08:57:17 2025] 127.0.0.1:62679 Accepted
+[Mon Oct  6 08:57:18 2025] 127.0.0.1:51565 [200]: GET /retornos.php
+[Mon Oct  6 08:57:18 2025] 127.0.0.1:51565 Closing
+[Mon Oct  6 08:57:22 2025] 127.0.0.1:50260 Accepted
+[Mon Oct  6 08:57:23 2025] 127.0.0.1:62679 [200]: GET /clientes.php
+[Mon Oct  6 08:57:23 2025] 127.0.0.1:62679 Closing
+[Mon Oct  6 08:57:25 2025] 127.0.0.1:61570 Accepted
+[Mon Oct  6 08:57:26 2025] 127.0.0.1:50260 [200]: GET /retornos.php
+[Mon Oct  6 08:57:26 2025] 127.0.0.1:50260 Closing
+[Mon Oct  6 08:57:33 2025] 127.0.0.1:50260 Accepted
+[Mon Oct  6 08:57:34 2025] 127.0.0.1:61570 [200]: GET /clientes.php
+[Mon Oct  6 08:57:34 2025] 127.0.0.1:61570 Closing
+[Mon Oct  6 08:57:37 2025] 127.0.0.1:50260 [200]: GET /relatorios.php
+[Mon Oct  6 08:57:37 2025] 127.0.0.1:50260 Closing
+[Mon Oct  6 08:57:37 2025] 127.0.0.1:56610 Accepted
+[Mon Oct  6 08:57:46 2025] 127.0.0.1:64262 Accepted
+[Mon Oct  6 08:57:47 2025] 127.0.0.1:56610 [200]: GET /configuracoes.php
+[Mon Oct  6 08:57:47 2025] 127.0.0.1:56610 Closing
+[Mon Oct  6 08:57:54 2025] 127.0.0.1:52892 Accepted
+[Mon Oct  6 08:57:57 2025] 127.0.0.1:64262 [200]: GET /dashboard.php
+[Mon Oct  6 08:57:57 2025] 127.0.0.1:64262 Closing
+[Mon Oct  6 08:59:10 2025] 127.0.0.1:52892 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Oct  6 08:59:10 2025] 127.0.0.1:52892 Closing
+[Mon Oct  6 09:10:58 2025] 127.0.0.1:63174 Accepted
+[Mon Oct  6 09:10:58 2025] 127.0.0.1:60702 Accepted
+[Mon Oct  6 09:11:01 2025] 127.0.0.1:63174 [200]: GET /dashboard.php
+[Mon Oct  6 09:11:01 2025] 127.0.0.1:63174 Closing
+[Mon Oct  6 09:11:18 2025] 127.0.0.1:60702 [302]: POST /logout.php
+[Mon Oct  6 09:11:18 2025] 127.0.0.1:60702 Closing
+[Mon Oct  6 09:11:18 2025] 127.0.0.1:56414 Accepted
+[Mon Oct  6 09:11:18 2025] 127.0.0.1:56414 [200]: GET /login.php
+[Mon Oct  6 09:11:18 2025] 127.0.0.1:56414 Closing
+[Mon Oct  6 09:25:20 2025] 127.0.0.1:49206 Accepted
+[Mon Oct  6 09:25:21 2025] 127.0.0.1:49206 [302]: POST /login.php
+[Mon Oct  6 09:25:21 2025] 127.0.0.1:49206 Closing
+[Mon Oct  6 09:25:21 2025] 127.0.0.1:58165 Accepted
+[Mon Oct  6 09:25:24 2025] 127.0.0.1:58165 [200]: GET /dashboard.php
+[Mon Oct  6 09:25:24 2025] 127.0.0.1:58165 Closing
+[Mon Oct  6 09:35:28 2025] 127.0.0.1:59334 Accepted
+[Mon Oct  6 09:35:28 2025] 127.0.0.1:56064 Accepted
+[Mon Oct  6 09:35:31 2025] 127.0.0.1:59334 [200]: GET /dashboard.php
+[Mon Oct  6 09:35:31 2025] 127.0.0.1:59334 Closing
+[Mon Oct  6 09:39:10 2025] 127.0.0.1:56064 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Oct  6 09:39:10 2025] 127.0.0.1:56064 Closing
+[Mon Oct  6 09:58:24 2025] 127.0.0.1:62377 Accepted
+[Mon Oct  6 09:58:24 2025] 127.0.0.1:62560 Accepted
+[Mon Oct  6 09:58:25 2025] 127.0.0.1:62377 [200]: GET /clientes.php
+[Mon Oct  6 09:58:25 2025] 127.0.0.1:62377 Closing
+[Mon Oct  6 09:58:29 2025] 127.0.0.1:65356 Accepted
+[Mon Oct  6 09:58:30 2025] 127.0.0.1:62560 [200]: GET /relatorios.php
+[Mon Oct  6 09:58:30 2025] 127.0.0.1:62560 Closing
+[Mon Oct  6 09:58:35 2025] 127.0.0.1:50261 Accepted
+[Mon Oct  6 09:58:36 2025] 127.0.0.1:65356 [200]: GET /equipamentos.php
+[Mon Oct  6 09:58:36 2025] 127.0.0.1:65356 Closing
+[Mon Oct  6 09:58:40 2025] 127.0.0.1:62080 Accepted
+[Mon Oct  6 09:58:42 2025] 127.0.0.1:50261 [200]: GET /equipamento_detalhe.php?id=1
+[Mon Oct  6 09:58:42 2025] 127.0.0.1:50261 Closing
+[Mon Oct  6 09:59:07 2025] 127.0.0.1:60587 Accepted
+[Mon Oct  6 09:59:10 2025] 127.0.0.1:62080 [200]: GET /dashboard.php
+[Mon Oct  6 09:59:10 2025] 127.0.0.1:62080 Closing
+[Mon Oct  6 09:59:59 2025] 127.0.0.1:64790 Accepted
+[Mon Oct  6 10:00:00 2025] 127.0.0.1:60587 [200]: GET /relatorios.php
+[Mon Oct  6 10:00:00 2025] 127.0.0.1:60587 Closing
+[Mon Oct  6 10:00:07 2025] 127.0.0.1:51712 Accepted
+[Mon Oct  6 10:00:11 2025] 127.0.0.1:64790 [200]: GET /dashboard.php
+[Mon Oct  6 10:00:11 2025] 127.0.0.1:64790 Closing
+[Mon Oct  6 10:02:10 2025] 127.0.0.1:51712 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Oct  6 10:02:10 2025] 127.0.0.1:51712 Closing
+[Mon Oct  6 10:40:05 2025] 127.0.0.1:57582 Accepted
+[Mon Oct  6 10:40:05 2025] 127.0.0.1:51969 Accepted
+[Mon Oct  6 10:40:05 2025] 127.0.0.1:57582 [302]: GET /dashboard.php
+[Mon Oct  6 10:40:05 2025] 127.0.0.1:57582 Closing
+[Mon Oct  6 10:40:05 2025] 127.0.0.1:51969 [200]: GET /login.php
+[Mon Oct  6 10:40:05 2025] 127.0.0.1:51969 Closing
+[Mon Oct  6 10:40:05 2025] 127.0.0.1:62187 Accepted
+[Mon Oct  6 10:40:05 2025] 127.0.0.1:49389 Accepted
+[Mon Oct  6 10:40:05 2025] 127.0.0.1:62187 [200]: GET /login.php
+[Mon Oct  6 10:40:05 2025] 127.0.0.1:62187 Closing
+[Mon Oct  6 10:40:08 2025] 127.0.0.1:49389 [302]: POST /login.php
+[Mon Oct  6 10:40:08 2025] 127.0.0.1:49389 Closing
+[Mon Oct  6 10:40:08 2025] 127.0.0.1:63473 Accepted
+[Mon Oct  6 10:40:09 2025] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 18 in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:35
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(35): PDO->query('    SELECT oper...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 35
+[Mon Oct  6 10:40:09 2025] 127.0.0.1:63473 [200]: GET /dashboard.php - Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 18 in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:35
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(35): PDO->query('    SELECT oper...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 35
+[Mon Oct  6 10:40:09 2025] 127.0.0.1:63473 Closing
+[Mon Oct  6 10:40:14 2025] 127.0.0.1:57741 Accepted
+[Mon Oct  6 10:40:14 2025] 127.0.0.1:49162 Accepted
+[Mon Oct  6 10:40:14 2025] 127.0.0.1:57741 [302]: GET /login.php
+[Mon Oct  6 10:40:14 2025] 127.0.0.1:57741 Closing
+[Mon Oct  6 10:40:16 2025] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 18 in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:35
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(35): PDO->query('    SELECT oper...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 35
+[Mon Oct  6 10:40:16 2025] 127.0.0.1:49162 [200]: GET /dashboard.php - Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 18 in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:35
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(35): PDO->query('    SELECT oper...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 35
+[Mon Oct  6 10:40:16 2025] 127.0.0.1:49162 Closing
+[Mon Oct  6 10:40:18 2025] 127.0.0.1:54015 Accepted
+[Mon Oct  6 10:40:18 2025] 127.0.0.1:60879 Accepted
+[Mon Oct  6 10:40:19 2025] 127.0.0.1:54015 [200]: GET /relatorios.php
+[Mon Oct  6 10:40:19 2025] 127.0.0.1:54015 Closing
+[Mon Oct  6 10:41:30 2025] 127.0.0.1:60879 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Oct  6 10:41:30 2025] 127.0.0.1:60879 Closing
+[Mon Oct  6 10:58:13 2025] 127.0.0.1:53817 Accepted
+[Mon Oct  6 10:58:13 2025] 127.0.0.1:52434 Accepted
+[Mon Oct  6 10:58:13 2025] PHP Parse error:  syntax error, unexpected token "<<" in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 36
+[Mon Oct  6 10:58:13 2025] 127.0.0.1:53817 [200]: GET /dashboard.php - syntax error, unexpected token "<<" in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 36
+[Mon Oct  6 10:58:13 2025] 127.0.0.1:53817 Closing
+[Mon Oct  6 10:59:16 2025] 127.0.0.1:52434 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Oct  6 10:59:16 2025] 127.0.0.1:52434 Closing
+[Mon Oct  6 11:14:44 2025] 127.0.0.1:50355 Accepted
+[Mon Oct  6 11:14:44 2025] 127.0.0.1:58117 Accepted
+[Mon Oct  6 11:14:44 2025] 127.0.0.1:50355 [302]: GET /dashboard.php
+[Mon Oct  6 11:14:44 2025] 127.0.0.1:50355 Closing
+[Mon Oct  6 11:14:44 2025] 127.0.0.1:58117 [200]: GET /login.php
+[Mon Oct  6 11:14:44 2025] 127.0.0.1:58117 Closing
+[Mon Oct  6 11:14:46 2025] 127.0.0.1:62065 Accepted
+[Mon Oct  6 11:14:46 2025] 127.0.0.1:57817 Accepted
+[Mon Oct  6 11:14:47 2025] 127.0.0.1:62065 [302]: POST /login.php
+[Mon Oct  6 11:14:47 2025] 127.0.0.1:62065 Closing
+[Mon Oct  6 11:14:50 2025] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'em.name' in 'field list' in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:147
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(147): PDO->query('    SELECT em.n...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 147
+[Mon Oct  6 11:14:50 2025] 127.0.0.1:57817 [200]: GET /dashboard.php - Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'em.name' in 'field list' in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:147
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(147): PDO->query('    SELECT em.n...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 147
+[Mon Oct  6 11:14:50 2025] 127.0.0.1:57817 Closing
+[Mon Oct  6 11:14:59 2025] 127.0.0.1:53453 Accepted
+[Mon Oct  6 11:15:00 2025] 127.0.0.1:53453 [302]: GET /
+[Mon Oct  6 11:15:00 2025] 127.0.0.1:53453 Closing
+[Mon Oct  6 11:15:00 2025] 127.0.0.1:50661 Accepted
+[Mon Oct  6 11:15:03 2025] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'em.name' in 'field list' in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:147
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(147): PDO->query('    SELECT em.n...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 147
+[Mon Oct  6 11:15:03 2025] 127.0.0.1:50661 [200]: GET /dashboard.php - Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'em.name' in 'field list' in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:147
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(147): PDO->query('    SELECT em.n...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 147
+[Mon Oct  6 11:15:03 2025] 127.0.0.1:50661 Closing
+[Mon Oct  6 11:15:05 2025] 127.0.0.1:65196 Accepted
+[Mon Oct  6 11:15:05 2025] 127.0.0.1:63608 Accepted
+[Mon Oct  6 11:15:08 2025] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'em.name' in 'field list' in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:147
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(147): PDO->query('    SELECT em.n...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 147
+[Mon Oct  6 11:15:08 2025] 127.0.0.1:65196 [200]: GET /dashboard.php - Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'em.name' in 'field list' in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:147
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(147): PDO->query('    SELECT em.n...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 147
+[Mon Oct  6 11:15:08 2025] 127.0.0.1:65196 Closing
+[Mon Oct  6 11:15:22 2025] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'em.name' in 'field list' in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:147
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(147): PDO->query('    SELECT em.n...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 147
+[Mon Oct  6 11:15:22 2025] 127.0.0.1:63608 [200]: GET /dashboard.php - Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'em.name' in 'field list' in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php:147
+Stack trace:
+#0 C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php(147): PDO->query('    SELECT em.n...')
+#1 {main}
+  thrown in C:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque\public\dashboard.php on line 147
+[Mon Oct  6 11:15:22 2025] 127.0.0.1:63608 Closing
+[Mon Oct  6 11:15:22 2025] 127.0.0.1:62119 Accepted
+[Mon Oct  6 11:15:22 2025] 127.0.0.1:62119 [404]: GET /favicon.ico - No such file or directory
+[Mon Oct  6 11:15:22 2025] 127.0.0.1:62119 Closing
+[Mon Oct  6 11:18:25 2025] 127.0.0.1:63555 Accepted
+[Mon Oct  6 11:18:25 2025] 127.0.0.1:51130 Accepted
+[Mon Oct  6 11:18:26 2025] 127.0.0.1:63555 [302]: GET /
+[Mon Oct  6 11:18:26 2025] 127.0.0.1:63555 Closing
+[Mon Oct  6 11:18:29 2025] 127.0.0.1:51130 [200]: GET /dashboard.php
+[Mon Oct  6 11:18:29 2025] 127.0.0.1:51130 Closing
+[Mon Oct  6 11:18:46 2025] 127.0.0.1:62071 Accepted
+[Mon Oct  6 11:18:46 2025] 127.0.0.1:51640 Accepted
+[Mon Oct  6 11:18:47 2025] 127.0.0.1:62071 [200]: GET /usuarios.php
+[Mon Oct  6 11:18:47 2025] 127.0.0.1:62071 Closing
+[Mon Oct  6 11:19:54 2025] 127.0.0.1:51640 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Oct  6 11:19:54 2025] 127.0.0.1:51640 Closing
+[Mon Oct  6 11:23:16 2025] 127.0.0.1:61693 Accepted
+[Mon Oct  6 11:23:16 2025] 127.0.0.1:50884 Accepted
+[Mon Oct  6 11:23:19 2025] 127.0.0.1:61693 [200]: GET /dashboard.php
+[Mon Oct  6 11:23:19 2025] 127.0.0.1:61693 Closing

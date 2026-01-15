@@ -1,0 +1,32 @@
+# Send all requests to the `public/` folder while allowing real files/dirs to be served directly
+# This makes the project work when uploaded to hosts where the document root cannot be changed.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Enforce HTTPS: redirect HTTP requests to HTTPS (also checks X-Forwarded-Proto)
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # If request is for an existing file or directory, serve it directly
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Otherwise rewrite to public/ preserving the rest of the path
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    # HSTS header for HTTPS responses (1 year). Only effective over TLS.
+    # Note: 'preload' removed to avoid accidental submission to the HSTS preload list.
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+</IfModule>
+
+# Prefer public/index.php as directory index
+DirectoryIndex public/index.php index.php index.html
+
+# Disable directory browsing
+Options -Indexes

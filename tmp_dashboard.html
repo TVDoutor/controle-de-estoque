@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard - Controle de Estoque</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui']
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+    <style>[x-cloak]{display:none!important;}</style>
+</head>
+<body class="font-['Inter'] bg-slate-100 text-slate-900">
+<div class="min-h-screen flex">
+<aside class="hidden md:flex md:flex-col md:w-64 bg-slate-900 text-slate-100">
+    <div class="px-6 py-5 border-b border-slate-800">
+        <span class="text-lg font-semibold tracking-wide">Controle de Estoque</span>
+        <p class="text-xs text-slate-400 mt-1">Controle de Estoque</p>
+    </div>
+    <nav class="flex-1 overflow-y-auto">
+        <ul class="py-4 space-y-1">
+                                            <li>
+                    <a href="dashboard.php" class="flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition bg-slate-800 text-white">
+                        <span class="material-icons-outlined text-lg">chevron_right</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                                            <li>
+                    <a href="equipamentos.php" class="flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition text-slate-300 hover:bg-slate-800/70 hover:text-white">
+                        <span class="material-icons-outlined text-lg">chevron_right</span>
+                        <span>Equipamentos</span>
+                    </a>
+                </li>
+                                            <li>
+                    <a href="entrada_cadastrar.php" class="flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition text-slate-300 hover:bg-slate-800/70 hover:text-white">
+                        <span class="material-icons-outlined text-lg">chevron_right</span>
+                        <span>Entradas</span>
+                    </a>
+                </li>
+                                            <li>
+                    <a href="saida_registrar.php" class="flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition text-slate-300 hover:bg-slate-800/70 hover:text-white">
+                        <span class="material-icons-outlined text-lg">chevron_right</span>
+                        <span>Saídas</span>
+                    </a>
+                </li>
+                                            <li>
+                    <a href="retornos.php" class="flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition text-slate-300 hover:bg-slate-800/70 hover:text-white">
+                        <span class="material-icons-outlined text-lg">chevron_right</span>
+                        <span>Retornos</span>
+                    </a>
+                </li>
+                                            <li>
+                    <a href="clientes.php" class="flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition text-slate-300 hover:bg-slate-800/70 hover:text-white">
+                        <span class="material-icons-outlined text-lg">chevron_right</span>
+                        <span>Clientes</span>
+                    </a>
+                </li>
+                                            <li>
+                    <a href="relatorios.php" class="flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition text-slate-300 hover:bg-slate-800/70 hover:text-white">
+                        <span class="material-icons-outlined text-lg">chevron_right</span>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                                            <li>
+                    <a href="configuracoes.php" class="flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition text-slate-300 hover:bg-slate-800/70 hover:text-white">
+                        <span class="material-icons-outlined text-lg">chevron_right</span>
+                        <span>Configurações</span>
+                    </a>
+                </li>
+                                            <li>
+                    <a href="usuarios.php" class="flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition text-slate-300 hover:bg-slate-800/70 hover:text-white">
+                        <span class="material-icons-outlined text-lg">chevron_right</span>
+                        <span>Usuários</span>
+                    </a>
+                </li>
+                    </ul>
+    </nav>
+    <div class="mt-auto px-6 py-5 border-t border-slate-800">
+                    <div class="text-sm">
+                <p class="font-semibold text-white">Hildebrando Cardoso</p>
+                <p class="text-slate-400 mt-1">Perfil: Administrador</p>
+                <a href="perfil.php" class="inline-block mt-3 text-xs text-blue-300 hover:text-blue-200">Ver perfil</a>
+            </div>
+            <form action="logout.php" method="post" class="mt-3">
+                <input type="hidden" name="csrf_token" value="c6eb342039711119fa8bc1a18ab2ba47eb5320c48a0f336e6fdaf8863eac6dba">
+                <button type="submit" class="text-xs text-slate-400 hover:text-red-300">Sair</button>
+            </form>
+            </div>
+</aside>
+<div class="md:hidden w-full" x-data="{ open: false }">
+    <div class="flex items-center justify-between px-4 py-3 bg-slate-900 text-white">
+        <div>
+            <p class="text-sm uppercase tracking-wide text-slate-400">Menu</p>
+            <p class="font-semibold text-lg">Controle de Estoque</p>
+        </div>
+        <button type="button" class="p-2 rounded-md bg-slate-800" @click="open = !open">
+            <span class="material-icons-outlined" x-show="!open">menu</span>
+            <span class="material-icons-outlined" x-show="open">close</span>
+        </button>
+    </div>
+    <div class="bg-slate-800 text-slate-100" x-show="open" x-cloak>
+        <nav class="px-4 py-3 space-y-2">
+            <a href="dashboard.php" class="block py-2 border-b border-slate-700">Dashboard</a>
+            <a href="equipamentos.php" class="block py-2 border-b border-slate-700">Equipamentos</a>
+            <a href="entrada_cadastrar.php" class="block py-2 border-b border-slate-700">Entradas</a>
+            <a href="saida_registrar.php" class="block py-2 border-b border-slate-700">Saídas</a>
+            <a href="retornos.php" class="block py-2 border-b border-slate-700">Retornos</a>
+            <a href="clientes.php" class="block py-2 border-b border-slate-700">Clientes</a>
+            <a href="relatorios.php" class="block py-2 border-b border-slate-700">Relatórios</a>
+            <a href="configuracoes.php" class="block py-2 border-b border-slate-700">Configurações</a>
+                            <a href="usuarios.php" class="block py-2 border-b border-slate-700">Usuários</a>
+                        <a href="perfil.php" class="block py-2 border-b border-slate-700">Meu Perfil</a>
+            <form action="logout.php" method="post" class="pt-2">
+                <input type="hidden" name="csrf_token" value="c6eb342039711119fa8bc1a18ab2ba47eb5320c48a0f336e6fdaf8863eac6dba">
+                <button type="submit" class="w-full text-left text-red-300">Sair</button>
+            </form>
+        </nav>
+    </div>
+</div>
+<main class="flex-1 flex flex-col bg-slate-950 text-slate-100">
+    <header class="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200">
+    <div>
+        <h1 class="text-xl font-semibold text-slate-800">
+            Dashboard        </h1>
+            </div>
+                    <div class="flex items-center gap-4">
+            <div class="text-right">
+                <p class="text-sm font-medium text-slate-700">Hildebrando Cardoso</p>
+                <p class="text-xs text-slate-500 uppercase tracking-wide">admin</p>
+            </div>
+            <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-slate-700 font-semibold">
+                HI            </span>
+        </div>
+    </header>
+    <section class="flex-1 px-6 pb-10">
+        <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 p-6 shadow-2xl shadow-slate-900/40 border border-slate-800">
+            <header class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.35em] text-slate-400">Visão Geral</p>
+                    <h1 class="mt-2 text-2xl font-semibold text-slate-50">Controle de Estoque · Analytics</h1>
+                </div>
+                <div class="flex items-center gap-3 text-sm">
+                    <span class="rounded-full bg-emerald-500/10 px-3 py-1 font-medium text-emerald-300">Atualizado automaticamente</span>
+                    <span class="text-slate-400">03 Oct 2025 23:36</span>
+                </div>
+            </header>
+
+            <div class="mt-6 grid gap-5 lg:grid-cols-4">
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+                    <p class="text-xs font-medium uppercase tracking-wide text-slate-400">Equipamentos cadastrados</p>
+                    <p class="mt-3 text-3xl font-semibold text-slate-50">1</p>
+                    <p class="mt-2 text-xs text-slate-400">Em estoque: 1 · Alocados: 0</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-[#111b3a] p-5">
+                    <p class="text-xs font-medium uppercase tracking-wide text-blue-200/80">Clientes atendidos</p>
+                    <p class="mt-3 text-3xl font-semibold text-blue-100">0</p>
+                    <p class="mt-2 text-xs text-blue-200/70">Total de clientes cadastrados: 0</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-[#1f2937] p-5">
+                    <p class="text-xs font-medium uppercase tracking-wide text-emerald-200/80">Itens enviados</p>
+                    <p class="mt-3 text-3xl font-semibold text-emerald-100">0</p>
+                    <p class="mt-2 text-xs text-emerald-200/70">Operações: 0</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-[#31243c] p-5">
+                    <p class="text-xs font-medium uppercase tracking-wide text-fuchsia-200/80">Devoluções registradas</p>
+                    <p class="mt-3 text-3xl font-semibold text-fuchsia-100">0</p>
+                    <p class="mt-2 text-xs text-fuchsia-200/70">Operações: 0</p>
+                </div>
+            </div>
+
+            <div class="mt-8 grid gap-6 xl:grid-cols-[2fr,1fr]">
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-slate-100">Envios ao longo do tempo</h2>
+                        <span class="text-xs text-slate-400">Últimos 12 meses</span>
+                    </div>
+                    <canvas id="shipmentsTrend" class="mt-5 h-56 w-full"></canvas>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
+                    <h2 class="text-lg font-semibold text-slate-100">Distribuição das operações</h2>
+                    <div class="mt-5 flex items-center justify-center">
+                        <div class="relative h-40 w-40">
+                            <div class="absolute inset-0 rounded-full border-8 border-slate-800"></div>
+                            <div class="absolute inset-2 rounded-full bg-slate-950 flex flex-col items-center justify-center">
+                                <span class="text-xs uppercase tracking-wider text-slate-400">Operações</span>
+                                <span class="text-3xl font-semibold text-slate-50">1</span>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="mt-6 space-y-3 text-sm">
+                        <li class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-300"><span class="h-2 w-2 rounded-full bg-blue-400"></span> Saídas registradas</span><span>0</span></li>
+                        <li class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-300"><span class="h-2 w-2 rounded-full bg-emerald-400"></span> Entradas registradas</span><span>1</span></li>
+                        <li class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-300"><span class="h-2 w-2 rounded-full bg-fuchsia-400"></span> Retornos registrados</span><span>0</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-8 grid gap-6 xl:grid-cols-2">
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-slate-100">Estados com mais envios</h2>
+                        <span class="text-xs text-slate-400">Fonte: dados dos clientes</span>
+                    </div>
+                                            <p class="mt-6 text-sm text-slate-400">Nenhum envio registrado ainda.</p>
+                                    </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
+                    <h2 class="text-lg font-semibold text-slate-100">Equipamentos com mais devoluções</h2>
+                    <div class="mt-5 space-y-4">
+                                                    <p class="text-sm text-slate-400">Nenhuma devolução registrada até o momento.</p>
+                                                                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 grid gap-6 xl:grid-cols-2">
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-slate-100">Usuários que mais enviam equipamentos</h2>
+                        <span class="text-xs text-slate-400">Operações de saída</span>
+                    </div>
+                    <ul class="mt-5 space-y-3">
+                                                    <li class="text-sm text-slate-400">Nenhum envio registrado.</li>
+                                                                    </ul>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-slate-100">Movimentações recentes</h2>
+                        <span class="text-xs text-slate-400">Últimas atividades</span>
+                    </div>
+                    <ul class="mt-5 space-y-4">
+                                                                            <li class="flex items-start justify-between rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-sm">
+                                <div>
+                                    <p class="font-medium text-slate-100">
+                                        ENTRADA · 1 itens
+                                    </p>
+                                    <p class="text-xs text-slate-400 mt-1">
+                                        03/10/2025 20:09 · Responsável: Hildebrando Cardoso                                    </p>
+                                                                    </div>
+                                <span class="rounded-full bg-slate-800 px-2 py-1 text-xs text-slate-300">
+                                    Entrada                                </span>
+                            </li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+    </main>
+</div>
+</body>
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+<script>
+    const shipmentsCtx = document.getElementById('shipmentsTrend');
+    if (shipmentsCtx) {
+        new Chart(shipmentsCtx, {
+            type: 'line',
+            data: {
+                labels: ["Sem dados"],
+                datasets: [
+                    {
+                        label: 'Operações',
+                        data: [0],
+                        borderColor: '#60a5fa',
+                        backgroundColor: 'rgba(96, 165, 250, 0.2)',
+                        tension: 0.35,
+                        fill: true,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Itens enviados',
+                        data: [0],
+                        borderColor: '#34d399',
+                        backgroundColor: 'rgba(52, 211, 153, 0.15)',
+                        tension: 0.3,
+                        fill: true,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { display: false }
+                    },
+                    y: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: 'rgba(148, 163, 184, 0.15)' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: '#e2e8f0' }
+                    }
+                }
+            }
+        });
+    }
+
+    const statesCtx = document.getElementById('statesChart');
+    if (statesCtx) {
+        new Chart(statesCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Itens enviados',
+                    data: [],
+                    backgroundColor: ['#38bdf8', '#6366f1', '#f97316', '#10b981', '#facc15', '#94a3b8', '#ec4899']
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: 'rgba(148, 163, 184, 0.12)' }
+                    },
+                    y: {
+                        ticks: { color: '#e2e8f0' },
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+</script>
