@@ -10,6 +10,8 @@ require_login();
 $pageTitle = 'Dashboard';
 $pageSubtitle = 'Resumo atualizado do estoque e das movimentações.';
 $activeMenu = 'dashboard';
+$range = (int) ($_GET['range'] ?? 30);
+$range = in_array($range, [30, 90, 365], true) ? $range : 30;
 $pdo = get_pdo();
 
 $inventoryTotals = $pdo->query(<<<SQL
@@ -30,6 +32,24 @@ $inventoryTotals = array_merge([
     'descartar' => 0,
 ], array_map('intval', array_map(static fn($value) => $value ?? 0, $inventoryTotals)));
 
+$newEquipmentStmt = $pdo->query(<<<SQL
+    SELECT COUNT(*) AS total
+    FROM equipment
+    WHERE entry_date >= DATE_SUB(CURDATE(), INTERVAL {$range} DAY)
+SQL);
+$newEquipmentCount = (int) ($newEquipmentStmt->fetchColumn() ?: 0);
+
+$allocationsStmt = $pdo->query(<<<SQL
+    SELECT
+        SUM(CASE WHEN eo.operation_type = 'SAIDA' THEN 1 ELSE 0 END) AS saidas,
+        SUM(CASE WHEN eo.operation_type = 'RETORNO' THEN 1 ELSE 0 END) AS retornos
+    FROM equipment_operations eo
+    LEFT JOIN equipment_operation_items eoi ON eoi.operation_id = eo.id
+    WHERE eo.operation_date >= DATE_SUB(NOW(), INTERVAL {$range} DAY)
+SQL);
+$allocationsRow = $allocationsStmt->fetch() ?: ['saidas' => 0, 'retornos' => 0];
+$allocationsSaldo = (int) ($allocationsRow['saidas'] ?? 0) - (int) ($allocationsRow['retornos'] ?? 0);
+
 $clientsTotal = (int) ($pdo->query('SELECT COUNT(*) FROM clients')->fetchColumn() ?: 0);
 
 
@@ -43,7 +63,7 @@ $operationsWindowStmt = $pdo->query(<<<SQL
                COUNT(eoi.id) AS item_count
         FROM equipment_operations eo
         LEFT JOIN equipment_operation_items eoi ON eoi.operation_id = eo.id
-        WHERE eo.operation_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        WHERE eo.operation_date >= DATE_SUB(NOW(), INTERVAL {$range} DAY)
         GROUP BY eo.id, eo.operation_type
     ) aggregated
     GROUP BY operation_type
@@ -68,6 +88,49 @@ $operationsWindowTotals = [
     'itens' => array_sum(array_column($operationsWindow, 'itens')),
 ];
 
+$prevEnd = (new DateTimeImmutable())->modify("-{$range} days")->format('Y-m-d H:i:s');
+$prevStart = (new DateTimeImmutable())->modify('-' . ($range * 2) . ' days')->format('Y-m-d H:i:s');
+$operationsWindowPrevStmt = $pdo->prepare(<<<SQL
+    SELECT operation_type,
+           COUNT(*) AS operacoes,
+           SUM(item_count) AS itens
+    FROM (
+        SELECT eo.id,
+               eo.operation_type,
+               COUNT(eoi.id) AS item_count
+        FROM equipment_operations eo
+        LEFT JOIN equipment_operation_items eoi ON eoi.operation_id = eo.id
+        WHERE eo.operation_date BETWEEN :prev_start AND :prev_end
+        GROUP BY eo.id, eo.operation_type
+    ) aggregated
+    GROUP BY operation_type
+SQL);
+$operationsWindowPrevStmt->execute(['prev_start' => $prevStart, 'prev_end' => $prevEnd]);
+$operationsPrevRows = $operationsWindowPrevStmt->fetchAll();
+$operationsPrevTotals = [
+    'operacoes' => 0,
+    'itens' => 0,
+];
+foreach ($operationsPrevRows as $row) {
+    $operationsPrevTotals['operacoes'] += (int) $row['operacoes'];
+    $operationsPrevTotals['itens'] += (int) $row['itens'];
+}
+if ($operationsPrevTotals['operacoes'] === 0) {
+    $operationsPrevTotals['operacoes'] = 1;
+}
+if ($operationsPrevTotals['itens'] === 0) {
+    $operationsPrevTotals['itens'] = 1;
+}
+$operationsDelta = [
+    'operacoes' => ($operationsWindowTotals['operacoes'] - $operationsPrevTotals['operacoes']) / $operationsPrevTotals['operacoes'] * 100,
+    'itens' => ($operationsWindowTotals['itens'] - $operationsPrevTotals['itens']) / $operationsPrevTotals['itens'] * 100,
+];
+$opsTrendIcon = $operationsDelta['operacoes'] >= 0 ? '+' : '-';
+$opsTrendValue = number_format(abs($operationsDelta['operacoes']), 1, ',', '.');
+$itemsTrendIcon = $operationsDelta['itens'] >= 0 ? '+' : '-';
+$itemsTrendValue = number_format(abs($operationsDelta['itens']), 1, ',', '.');
+
+$trendMonths = $range === 365 ? 12 : ($range === 90 ? 6 : 3);
 $shipmentsTrendStmt = $pdo->prepare(<<<SQL
     SELECT DATE_FORMAT(eo.operation_date, '%Y-%m-01') AS bucket,
            DATE_FORMAT(eo.operation_date, '%b %Y') AS label,
@@ -76,7 +139,7 @@ $shipmentsTrendStmt = $pdo->prepare(<<<SQL
     FROM equipment_operations eo
     LEFT JOIN equipment_operation_items eoi ON eoi.operation_id = eo.id
     WHERE eo.operation_type = 'SAIDA'
-      AND eo.operation_date >= DATE_SUB(CURDATE(), INTERVAL 11 MONTH)
+      AND eo.operation_date >= DATE_SUB(CURDATE(), INTERVAL {$trendMonths} MONTH)
     GROUP BY bucket, label
     ORDER BY bucket
 SQL);
@@ -143,6 +206,14 @@ foreach ($conditionRows as $row) {
     $conditionLabels[] = $conditionLabelMap[$key] ?? $key;
     $conditionValues[] = (int) $row['total'];
 }
+
+$rangeLabel = $range === 365 ? '12 meses' : ($range === 90 ? '90 dias' : '30 dias');
+$trendLabel = $trendMonths . ' meses';
+$buildRangeLink = static function (int $value) : string {
+    $params = $_GET;
+    $params['range'] = $value;
+    return '?' . http_build_query($params);
+};
 
 $topModelsStmt = $pdo->query(<<<SQL
     SELECT TRIM(CONCAT_WS(' ', em.brand, em.model_name)) AS modelo,
@@ -324,44 +395,53 @@ include __DIR__ . '/../templates/sidebar.php';
     <div class="flex-1 overflow-y-auto">
         <div class="mx-auto max-w-7xl px-6 pb-12 space-y-8">
             <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-lg shadow-slate-900/20">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Equipamentos cadastrados</p>
+                <div class="surface-card">
+                    <p class="text-xs font-semibold uppercase tracking-wide surface-muted">Equipamentos cadastrados</p>
                     <p class="mt-3 text-3xl font-semibold text-white"><?= number_format($inventoryTotals['total'], 0, ',', '.'); ?></p>
-                    <p class="mt-2 text-xs text-slate-400"><?= number_format($inventoryTotals['em_estoque'], 0, ',', '.'); ?> disponíveis em estoque</p>
+                    <p class="mt-2 text-xs surface-muted"><?= number_format($inventoryTotals['em_estoque'], 0, ',', '.'); ?> disponíveis em estoque</p>
+                    <p class="mt-1 text-xs surface-muted">+<?= number_format($newEquipmentCount, 0, ',', '.'); ?> no período</p>
                 </div>
-                <div class="rounded-2xl border border-slate-800 bg-blue-900/40 p-5 shadow-lg shadow-blue-900/20">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-blue-200">Alocados</p>
+                <div class="surface-card">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-blue-300">Alocados</p>
                     <p class="mt-3 text-3xl font-semibold text-blue-50"><?= number_format($inventoryTotals['alocado'], 0, ',', '.'); ?></p>
                     <p class="mt-2 text-xs text-blue-200/80">Equipamentos atualmente em campo</p>
+                    <p class="mt-1 text-xs text-blue-200/70">Saldo do período: <?= $allocationsSaldo >= 0 ? '+' : ''; ?><?= $allocationsSaldo; ?></p>
                 </div>
-                <div class="rounded-2xl border border-slate-800 bg-emerald-900/40 p-5 shadow-lg shadow-emerald-900/20">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-emerald-200">Operações (30 dias)</p>
+                <div class="surface-card">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300">Operações (<?= sanitize($rangeLabel); ?>)</p>
                     <p class="mt-3 text-3xl font-semibold text-emerald-50"><?= number_format($operationsWindowTotals['operacoes'], 0, ',', '.'); ?></p>
                     <p class="mt-2 text-xs text-emerald-200/80"><?= number_format($operationsWindowTotals['itens'], 0, ',', '.'); ?> itens movimentados</p>
+                    <p class="mt-1 text-xs text-emerald-200/70">Operações: <?= $opsTrendIcon; ?> <?= $opsTrendValue; ?>% vs período anterior</p>
+                    <p class="text-xs text-emerald-200/70">Itens: <?= $itemsTrendIcon; ?> <?= $itemsTrendValue; ?>% vs período anterior</p>
                 </div>
-                <div class="rounded-2xl border border-slate-800 bg-violet-900/40 p-5 shadow-lg shadow-violet-900/25">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-violet-200">Clientes cadastrados</p>
+                <div class="surface-card">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-violet-300">Clientes cadastrados</p>
                     <p class="mt-3 text-3xl font-semibold text-violet-50"><?= number_format($clientsTotal, 0, ',', '.'); ?></p>
                     <p class="mt-2 text-xs text-violet-200/80">Com movimentações registradas</p>
                 </div>
             </section>
 
             <section class="grid gap-6 xl:grid-cols-[2fr,1fr]">
-                <div class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-900/30">
+                <div class="surface-card">
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Envios mensais</p>
-                            <h2 class="text-lg font-semibold text-white">Saídas de equipamentos (últimos 12 meses)</h2>
+                            <p class="text-xs uppercase tracking-[0.3em] surface-muted">Envios mensais</p>
+                            <h2 class="surface-heading">Saídas de equipamentos (últimos <?= sanitize($trendLabel); ?>)</h2>
                         </div>
-                        <span class="text-xs text-slate-400">Atualizado em <?= sanitize(format_datetime(date('Y-m-d H:i:s'))); ?></span>
+                        <div class="flex items-center gap-2 text-xs">
+                            <a href="<?= sanitize($buildRangeLink(30)); ?>" class="rounded-full px-3 py-1 font-semibold <?= $range === 30 ? 'bg-blue-500/20 text-blue-200' : 'bg-slate-800/60 text-slate-300'; ?>">30d</a>
+                            <a href="<?= sanitize($buildRangeLink(90)); ?>" class="rounded-full px-3 py-1 font-semibold <?= $range === 90 ? 'bg-blue-500/20 text-blue-200' : 'bg-slate-800/60 text-slate-300'; ?>">90d</a>
+                            <a href="<?= sanitize($buildRangeLink(365)); ?>" class="rounded-full px-3 py-1 font-semibold <?= $range === 365 ? 'bg-blue-500/20 text-blue-200' : 'bg-slate-800/60 text-slate-300'; ?>">12m</a>
+                            <span class="ml-2 surface-muted">Atualizado em <?= sanitize(format_datetime(date('Y-m-d H:i:s'))); ?></span>
+                        </div>
                     </div>
                     <div class="mt-6 h-72">
                         <canvas id="enviosMes"></canvas>
                     </div>
                 </div>
                 <div class="flex flex-col gap-6">
-                    <div class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-900/30">
-                        <h2 class="text-lg font-semibold text-white">Resumo das operações (30 dias)</h2>
+                    <div class="surface-card">
+                        <h2 class="surface-heading">Resumo das operações (<?= sanitize($rangeLabel); ?>)</h2>
                         <ul class="mt-5 space-y-4 text-sm">
                             <li class="flex items-center justify-between rounded-xl border border-slate-800/60 bg-slate-950/60 px-4 py-3">
                                 <div>
@@ -399,26 +479,26 @@ include __DIR__ . '/../templates/sidebar.php';
             </section>
 
             <section class="grid gap-6 xl:grid-cols-[1.6fr,1fr]">
-                <div class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-900/30">
+                <div class="surface-card">
                     <div class="flex flex-wrap items-center justify-between gap-3">
-                        <h2 class="text-lg font-semibold text-white">Movimentações recentes</h2>
+                        <h2 class="surface-heading">Movimentações recentes</h2>
                         <a href="relatorios.php" class="text-xs text-blue-300 hover:text-blue-200">Ver relatório completo</a>
                     </div>
-                    <div class="mt-5 overflow-x-auto">
-                        <table class="min-w-full divide-y divide-slate-800 text-sm">
-                            <thead>
-                                <tr class="text-left text-xs uppercase tracking-wide text-slate-400">
-                                    <th class="px-4 py-3">Operação</th>
-                                    <th class="px-4 py-3">Itens</th>
-                                    <th class="px-4 py-3">Cliente</th>
-                                    <th class="px-4 py-3">Responsável</th>
-                                    <th class="px-4 py-3 text-right">Data</th>
+                    <div class="mt-5 overflow-x-auto surface-table-wrapper">
+                        <table class="min-w-full text-sm">
+                            <thead class="surface-table-head">
+                                <tr class="text-left">
+                                    <th class="surface-table-cell">Operação</th>
+                                    <th class="surface-table-cell">Itens</th>
+                                    <th class="surface-table-cell">Cliente</th>
+                                    <th class="surface-table-cell">Responsável</th>
+                                    <th class="surface-table-cell text-right">Data</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-800/60">
+                            <tbody class="surface-table-body">
                                 <?php if (!$recentOps): ?>
                                     <tr>
-                                        <td colspan="5" class="px-4 py-6 text-center text-slate-400">Nenhuma movimentação registrada até o momento.</td>
+                                        <td colspan="5" class="surface-table-cell text-center surface-muted">Nenhuma movimentação registrada até o momento.</td>
                                     </tr>
                                 <?php else: ?>
                                     <?php foreach ($recentOps as $op): ?>
@@ -428,15 +508,17 @@ include __DIR__ . '/../templates/sidebar.php';
                                             $typeLabel = $operationTypeLabels[$type] ?? $type;
                                         ?>
                                         <tr>
-                                            <td class="px-4 py-4">
-                                                <span class="inline-flex items-center gap-2">
+                                            <td class="surface-table-cell">
+                                                <a href="relatorios.php?type=<?= sanitize($type); ?>" class="inline-flex items-center gap-2">
                                                     <span class="inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold <?= sanitize($badgeClass); ?>"><?= sanitize($typeLabel); ?></span>
-                                                </span>
+                                                </a>
                                             </td>
-                                            <td class="px-4 py-4 text-slate-200"><?= (int) $op['itens']; ?></td>
-                                            <td class="px-4 py-4 text-slate-300">
+                                            <td class="surface-table-cell"><?= (int) $op['itens']; ?></td>
+                                            <td class="surface-table-cell">
                                                 <?php if ($op['cliente']): ?>
-                                                    <?= sanitize($op['cliente']); ?>
+                                                    <a class="text-blue-300 hover:text-blue-200" href="clientes.php?search=<?= sanitize($op['cliente']); ?>">
+                                                        <?= sanitize($op['cliente']); ?>
+                                                    </a>
                                                     <?php if ($op['state']): ?>
                                                         <span class="text-xs text-slate-500">(<?= sanitize($op['state']); ?>)</span>
                                                     <?php endif; ?>
@@ -444,8 +526,8 @@ include __DIR__ . '/../templates/sidebar.php';
                                                     <span class="text-slate-500">Sem cliente</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td class="px-4 py-4 text-slate-300"><?= sanitize($op['usuario'] ?? 'Não informado'); ?></td>
-                                            <td class="px-4 py-4 text-right text-slate-400"><?= format_datetime($op['operation_date']); ?></td>
+                                            <td class="surface-table-cell"><?= sanitize($op['usuario'] ?? 'Não informado'); ?></td>
+                                            <td class="surface-table-cell text-right surface-muted"><?= format_datetime($op['operation_date']); ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -454,29 +536,29 @@ include __DIR__ . '/../templates/sidebar.php';
                     </div>
                 </div>
                 <div class="flex flex-col gap-6">
-                    <div class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-900/30">
-                        <h2 class="text-lg font-semibold text-white">Distribuição por estado</h2>
+                    <div class="surface-card">
+                        <h2 class="surface-heading">Distribuição por estado</h2>
                         <?php if ($statesLabels): ?>
                             <div class="mt-5 h-60">
                                 <canvas id="estadosDistribuicao"></canvas>
                             </div>
                         <?php else: ?>
-                            <p class="mt-4 text-sm text-slate-400">Ainda não há saídas com clientes cadastrados.</p>
+                            <p class="mt-4 text-sm surface-muted">Ainda não há saídas com clientes cadastrados.</p>
                         <?php endif; ?>
                     </div>
-                    <div class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-900/30">
-                        <h2 class="text-lg font-semibold text-white">Condição do estoque</h2>
+                    <div class="surface-card">
+                        <h2 class="surface-heading">Condição do estoque</h2>
                         <div class="mt-5 h-56">
                             <canvas id="condicaoEstoque"></canvas>
                         </div>
                         <?php if ($topModels): ?>
                             <div class="mt-6">
-                                <p class="text-xs uppercase tracking-wide text-slate-400">Modelos com mais movimentações</p>
+                                <p class="text-xs uppercase tracking-wide surface-muted">Modelos com mais movimentações</p>
                                 <ul class="mt-3 space-y-2 text-sm">
                                     <?php foreach ($topModels as $model): ?>
                                         <li class="flex items-center justify-between">
-                                            <span class="text-slate-200"><?= sanitize($model['modelo']); ?></span>
-                                            <span class="text-slate-400"><?= (int) $model['movimentacoes']; ?> movimentações</span>
+                                            <span><?= sanitize($model['modelo']); ?></span>
+                                            <span class="surface-muted"><?= (int) $model['movimentacoes']; ?> movimentações</span>
                                         </li>
                                     <?php endforeach; ?>
                                 </ul>

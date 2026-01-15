@@ -71,6 +71,7 @@ $csrfToken = ensure_csrf_token();
         <div class="text-center space-y-2">
             <h1 class="text-2xl font-semibold text-slate-100"><?= sanitize(APP_NAME); ?></h1>
             <p class="text-sm text-slate-400">Informe o e-mail cadastrado para receber o link de redefinição de senha.</p>
+            <p class="text-xs text-slate-400">O envio pode levar até 5 minutos. Verifique também a pasta de spam/lixo eletrônico.</p>
         </div>
 
         <?php if ($feedback): ?>

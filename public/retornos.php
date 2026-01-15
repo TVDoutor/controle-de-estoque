@@ -9,6 +9,7 @@ require_login(['admin', 'gestor']);
 
 $pageTitle = 'Registrar Retorno';
 $activeMenu = 'retornos';
+$showDensityToggle = true;
 $pdo = get_pdo();
 $user = current_user();
 $errors = [];
@@ -32,7 +33,7 @@ SQL)->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validate_csrf_token($_POST['csrf_token'] ?? null)) {
-        $errors[] = 'Sesso expirada. Recarregue a pgina.';
+        $errors[] = 'Sessão expirada. Recarregue a página.';
     } else {
         $items = $_POST['items'] ?? [];
         $operationDateInput = $_POST['operation_date'] ?? '';
@@ -51,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $operationDate = $operationDateInput ? DateTime::createFromFormat('Y-m-d\TH:i', $operationDateInput) : new DateTime();
         if (!$operationDate) {
-            $errors[] = 'Data do retorno invlida.';
+            $errors[] = 'Data do retorno inválida.';
         }
 
         if (!$errors) {
@@ -70,12 +71,12 @@ SQL);
                 $equipmentsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 if (count($equipmentsData) !== count($selectedItems)) {
-                    throw new RuntimeException('Alguns equipamentos no esto mais marcados como alocados.');
+                    throw new RuntimeException('Alguns equipamentos não estão mais marcados como alocados.');
                 }
 
                 $clientIds = array_unique(array_column($equipmentsData, 'current_client_id'));
                 if (count($clientIds) !== 1) {
-                    throw new RuntimeException('Selecione equipamentos do mesmo cliente por operao.');
+                    throw new RuntimeException('Selecione equipamentos do mesmo cliente por operação.');
                 }
                 $clientId = (int) $clientIds[0];
 
@@ -166,13 +167,13 @@ include __DIR__ . '/../templates/sidebar.php';
     <?php include __DIR__ . '/../templates/topbar.php'; ?>
     <section class="flex-1 overflow-y-auto px-6 pb-12 space-y-6">
         <?php if ($flash = flash('success')): ?>
-            <div class="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            <div class="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-200">
                 <?= sanitize($flash['message']); ?>
             </div>
         <?php endif; ?>
 
         <?php if ($errors): ?>
-            <div class="rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div class="rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-4 text-sm text-red-200">
                 <ul class="list-disc space-y-1 pl-5">
                     <?php foreach ($errors as $error): ?>
                         <li><?= sanitize($error); ?></li>
@@ -183,43 +184,58 @@ include __DIR__ . '/../templates/sidebar.php';
 
         <form method="post" class="space-y-6">
             <input type="hidden" name="csrf_token" value="<?= sanitize(ensure_csrf_token()); ?>">
-            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="text-lg font-semibold text-slate-800">Equipamentos alocados</h2>
-                <div class="mt-4 overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-200 text-sm">
-                        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <div class="surface-card">
+                <h2 class="surface-heading">Equipamentos alocados</h2>
+                <div class="mt-4 overflow-x-auto surface-table-wrapper">
+                    <table class="min-w-full text-sm">
+                        <thead class="surface-table-head">
                             <tr>
-                                <th class="px-3 py-2">Retorno</th>
-                                <th class="px-3 py-2 text-left">Etiqueta</th>
-                                <th class="px-3 py-2 text-left">Cliente</th>
-                                <th class="px-3 py-2 text-left">Acessórios</th>
-                                <th class="px-3 py-2 text-left">Condições após retorno</th>
-                                <th class="px-3 py-2 text-left">Observações</th>
+                                <th class="surface-table-cell">Retorno</th>
+                                <th class="surface-table-cell text-left">Etiqueta</th>
+                                <th class="surface-table-cell text-left">Cliente</th>
+                                <th class="surface-table-cell text-left">Acessórios</th>
+                                <th class="surface-table-cell text-left">Condição após retorno</th>
+                                <th class="surface-table-cell text-left">Observações</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody class="surface-table-body">
                             <?php if (!$allocatedEquipment): ?>
                                 <tr>
-                                    <td colspan="6" class="px-3 py-4 text-center text-slate-500">Nenhum equipamento alocado no momento.</td>
+                                    <td colspan="6" class="surface-table-cell text-center surface-muted">Nenhum equipamento alocado no momento.</td>
                                 </tr>
                             <?php endif; ?>
+                            <?php $currentClientId = null; ?>
                             <?php foreach ($allocatedEquipment as $item): ?>
+                                <?php if ($currentClientId !== $item['client_id']): ?>
+                                    <?php $currentClientId = $item['client_id']; ?>
+                                    <tr class="bg-slate-900/70">
+                                        <td colspan="6" class="surface-table-cell text-xs font-semibold uppercase tracking-wide text-blue-200">
+                                            <div class="flex items-center justify-between gap-3">
+                                                <span>Cliente: <?= sanitize($item['client_code']); ?> - <?= sanitize($item['client_name']); ?></span>
+                                                <label class="inline-flex items-center gap-2 text-xs text-blue-200">
+                                                    <input type="checkbox" class="js-client-toggle rounded border-slate-300 text-blue-600 focus:ring-blue-500" data-client-id="<?= (int) $item['client_id']; ?>">
+                                                    Selecionar cliente
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                                 <tr>
-                                    <td class="px-3 py-2 text-center align-top">
-                                        <input type="checkbox" name="items[<?= (int) $item['id']; ?>][selected]" value="1" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                    <td class="surface-table-cell text-center align-top">
+                                        <input type="checkbox" name="items[<?= (int) $item['id']; ?>][selected]" value="1" class="js-return-item rounded border-slate-300 text-blue-600 focus:ring-blue-500" data-client-id="<?= (int) $item['client_id']; ?>">
                                     </td>
-                                    <td class="px-3 py-2 align-top">
-                                        <p class="font-semibold text-slate-700"><?= sanitize($item['asset_tag']); ?></p>
-                                        <p class="text-xs text-slate-500">Modelo: <?= sanitize($item['brand']); ?> <?= sanitize($item['model_name']); ?><?php if ($item['monitor_size']): ?> (<?= sanitize($item['monitor_size']); ?>")<?php endif; ?></p>
-                                        <p class="text-xs text-slate-500">Condio atual: <?= sanitize($item['condition_status']); ?></p>
+                                    <td class="surface-table-cell align-top">
+                                        <p class="font-semibold"><?= sanitize($item['asset_tag']); ?></p>
+                                        <p class="text-xs surface-muted">Modelo: <?= sanitize($item['brand']); ?> <?= sanitize($item['model_name']); ?><?php if ($item['monitor_size']): ?> (<?= sanitize($item['monitor_size']); ?>")<?php endif; ?></p>
+                                        <p class="text-xs surface-muted">Condição atual: <?= sanitize($item['condition_status']); ?></p>
                                     </td>
-                                    <td class="px-3 py-2 align-top text-sm text-slate-600">
+                                    <td class="surface-table-cell align-top text-sm">
                                         <?= sanitize($item['client_code']); ?> - <?= sanitize($item['client_name']); ?>
                                     </td>
-                                    <td class="px-3 py-2 align-top space-y-2 text-xs text-slate-600">
+                                    <td class="surface-table-cell align-top space-y-2 text-xs">
                                         <label class="flex items-center gap-2">
                                             <input type="checkbox" name="items[<?= (int) $item['id']; ?>][power]" value="1" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                                            Fonte de alimentao
+                                            Fonte de alimentação
                                         </label>
                                         <label class="flex items-center gap-2">
                                             <input type="checkbox" name="items[<?= (int) $item['id']; ?>][hdmi]" value="1" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
@@ -230,15 +246,15 @@ include __DIR__ . '/../templates/sidebar.php';
                                             Controle remoto
                                         </label>
                                     </td>
-                                    <td class="px-3 py-2 align-top">
-                                        <select name="items[<?= (int) $item['id']; ?>][condition]" class="rounded-lg border border-slate-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none">
-                                            <option value="ok">Revisado - Pronto para uso</option>
-                                            <option value="manutencao">Necessita manutenção</option>
+                                    <td class="surface-table-cell align-top">
+                                        <select name="items[<?= (int) $item['id']; ?>][condition]" class="surface-select-compact js-return-condition">
+                                            <option value="ok">OK - Pronto para uso</option>
+                                            <option value="manutencao">Manutenção necessária</option>
                                             <option value="descartar">Descartar / Baixar</option>
                                         </select>
                                     </td>
-                                    <td class="px-3 py-2 align-top">
-                                        <textarea name="items[<?= (int) $item['id']; ?>][remarks]" rows="2" class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none"></textarea>
+                                    <td class="surface-table-cell align-top">
+                                        <textarea name="items[<?= (int) $item['id']; ?>][remarks]" rows="2" class="surface-field-compact"></textarea>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -246,19 +262,68 @@ include __DIR__ . '/../templates/sidebar.php';
                     </table>
                 </div>
             </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+            <div class="surface-card space-y-4">
                 <div>
-                    <label class="text-sm font-medium text-slate-600" for="operation_date">Data e hora do retorno</label>
-                    <input type="datetime-local" id="operation_date" name="operation_date" value="<?= sanitize($_POST['operation_date'] ?? date('Y-m-d\TH:i')); ?>" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                    <label class="text-sm font-medium text-slate-300" for="operation_date">Data e hora do retorno</label>
+                    <input type="datetime-local" id="operation_date" name="operation_date" value="<?= sanitize($_POST['operation_date'] ?? date('Y-m-d\TH:i')); ?>" class="surface-field">
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-slate-600" for="general_notes">Observações gerais</label>
-                    <textarea id="general_notes" name="general_notes" rows="4" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"><?= sanitize($_POST['general_notes'] ?? ''); ?></textarea>
+                    <label class="text-sm font-medium text-slate-300" for="general_notes">Observações gerais</label>
+                    <textarea id="general_notes" name="general_notes" rows="4" class="surface-field"><?= sanitize($_POST['general_notes'] ?? ''); ?></textarea>
                 </div>
-                <button type="submit" class="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Registrar retorno</button>
+                <button type="submit" class="w-full rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">Registrar retorno</button>
             </div>
         </form>
     </section>
-<?php include __DIR__ . '/../templates/footer.php';
+<?php
+$footerScripts = <<<HTML
+<script>
+    (function () {
+        const clientToggles = Array.from(document.querySelectorAll('.js-client-toggle'));
+        const itemCheckboxes = Array.from(document.querySelectorAll('.js-return-item'));
+        const conditionSelects = Array.from(document.querySelectorAll('.js-return-condition'));
+        if (!clientToggles.length || !itemCheckboxes.length) {
+            return;
+        }
+        function updateClientState(clientId) {
+            const items = itemCheckboxes.filter(cb => cb.dataset.clientId === clientId);
+            const checked = items.filter(cb => cb.checked);
+            const toggle = clientToggles.find(cb => cb.dataset.clientId === clientId);
+            if (!toggle) return;
+            toggle.checked = checked.length > 0 && checked.length === items.length;
+            toggle.indeterminate = checked.length > 0 && checked.length < items.length;
+        }
+        clientToggles.forEach(toggle => {
+            toggle.addEventListener('change', () => {
+                const clientId = toggle.dataset.clientId;
+                itemCheckboxes
+                    .filter(cb => cb.dataset.clientId === clientId)
+                    .forEach(cb => { cb.checked = toggle.checked; });
+                updateClientState(clientId);
+            });
+        });
+        itemCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => updateClientState(cb.dataset.clientId));
+        });
+        clientToggles.forEach(toggle => updateClientState(toggle.dataset.clientId));
+
+        const applyConditionStyle = (select) => {
+            select.classList.remove('border-emerald-400', 'border-amber-400', 'border-red-400', 'text-emerald-200', 'text-amber-200', 'text-red-200');
+            if (select.value === 'ok') {
+                select.classList.add('border-emerald-400', 'text-emerald-200');
+            } else if (select.value === 'manutencao') {
+                select.classList.add('border-amber-400', 'text-amber-200');
+            } else if (select.value === 'descartar') {
+                select.classList.add('border-red-400', 'text-red-200');
+            }
+        };
+        conditionSelects.forEach(select => {
+            select.addEventListener('change', () => applyConditionStyle(select));
+            applyConditionStyle(select);
+        });
+    })();
+</script>
+HTML;
+include __DIR__ . '/../templates/footer.php';
 
 

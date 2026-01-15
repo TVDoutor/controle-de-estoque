@@ -71,13 +71,13 @@ include __DIR__ . '/../templates/sidebar.php';
     <?php include __DIR__ . '/../templates/topbar.php'; ?>
     <section class="flex-1 overflow-y-auto px-6 pb-12 space-y-6">
         <?php if ($flash = flash('success')): ?>
-            <div class="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            <div class="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-200">
                 <?= sanitize($flash['message']); ?>
             </div>
         <?php endif; ?>
 
         <?php if ($errors): ?>
-            <div class="rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div class="rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-4 text-sm text-red-200">
                 <ul class="list-disc space-y-1 pl-5">
                     <?php foreach ($errors as $error): ?>
                         <li><?= sanitize($error); ?></li>
@@ -87,49 +87,87 @@ include __DIR__ . '/../templates/sidebar.php';
         <?php endif; ?>
 
         <div class="grid gap-6 lg:grid-cols-2">
-            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="text-lg font-semibold text-slate-800">Dados pessoais</h2>
+            <div class="surface-card">
+                <h2 class="surface-heading">Dados pessoais</h2>
                 <form method="post" class="mt-4 space-y-4">
                     <input type="hidden" name="csrf_token" value="<?= sanitize(ensure_csrf_token()); ?>">
                     <input type="hidden" name="action" value="update_profile">
                     <div>
-                        <label class="text-sm font-medium text-slate-600" for="name">Nome completo</label>
-                        <input type="text" id="name" name="name" required value="<?= sanitize($user['name']); ?>" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                        <label class="text-sm font-medium text-slate-300" for="name">Nome completo</label>
+                        <input type="text" id="name" name="name" required value="<?= sanitize($user['name']); ?>" class="surface-field">
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-slate-600" for="email">E-mail</label>
-                        <input type="email" id="email" value="<?= sanitize($user['email']); ?>" disabled class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-500">
-                        <p class="mt-1 text-xs text-slate-500">Entre em contato com o administrador para alterar seu e-mail.</p>
+                        <label class="text-sm font-medium text-slate-300" for="email">E-mail</label>
+                        <input type="email" id="email" value="<?= sanitize($user['email']); ?>" disabled class="mt-1 w-full rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm text-slate-400">
+                        <p class="mt-1 text-xs surface-muted">Entre em contato com o administrador para alterar seu e-mail.</p>
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-slate-600" for="phone">Telefone</label>
-                        <input type="text" id="phone" name="phone" value="<?= sanitize($user['phone'] ?? ''); ?>" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                        <label class="text-sm font-medium text-slate-300" for="phone">Telefone</label>
+                        <input type="text" id="phone" name="phone" value="<?= sanitize($user['phone'] ?? ''); ?>" class="surface-field" data-mask="phone" inputmode="tel" placeholder="(00) 00000-0000">
                     </div>
-                    <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Salvar alterações</button>
+                    <button type="submit" class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500">Salvar alterações</button>
                 </form>
             </div>
-            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="text-lg font-semibold text-slate-800">Alterar senha</h2>
+            <div class="surface-card">
+                <h2 class="surface-heading">Alterar senha</h2>
                 <form method="post" class="mt-4 space-y-4">
                     <input type="hidden" name="csrf_token" value="<?= sanitize(ensure_csrf_token()); ?>">
                     <input type="hidden" name="action" value="change_password">
                     <div>
-                        <label class="text-sm font-medium text-slate-600" for="current_password">Senha atual</label>
-                        <input type="password" id="current_password" name="current_password" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                        <label class="text-sm font-medium text-slate-300" for="current_password">Senha atual</label>
+                        <input type="password" id="current_password" name="current_password" required class="surface-field">
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-slate-600" for="new_password">Nova senha</label>
-                        <input type="password" id="new_password" name="new_password" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                        <label class="text-sm font-medium text-slate-300" for="new_password">Nova senha</label>
+                        <input type="password" id="new_password" name="new_password" required class="surface-field">
+                        <div class="mt-2 h-1 w-full rounded-full bg-slate-800">
+                            <div id="profilePasswordStrengthBar" class="h-1 w-1/4 rounded-full bg-red-500"></div>
+                        </div>
+                        <p id="profilePasswordStrengthText" class="mt-1 text-xs surface-muted">Força da senha: fraca</p>
+                        <p class="mt-1 text-xs surface-muted">Use pelo menos 8 caracteres com letras e números.</p>
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-slate-600" for="confirm_password">Confirmar nova senha</label>
-                        <input type="password" id="confirm_password" name="confirm_password" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                        <label class="text-sm font-medium text-slate-300" for="confirm_password">Confirmar nova senha</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required class="surface-field">
                     </div>
-                    <button type="submit" class="rounded-lg bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Atualizar senha</button>
+                    <button type="submit" class="rounded-xl bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-600">Atualizar senha</button>
                 </form>
             </div>
         </div>
     </section>
-<?php include __DIR__ . '/../templates/footer.php';
+<?php
+$footerScripts = <<<HTML
+<script>
+    (function () {
+        const input = document.getElementById('new_password');
+        const bar = document.getElementById('profilePasswordStrengthBar');
+        const text = document.getElementById('profilePasswordStrengthText');
+        if (!input || !bar || !text) {
+            return;
+        }
+        const update = () => {
+            const value = input.value || '';
+            let score = 0;
+            if (value.length >= 8) score += 1;
+            if (/[A-Z]/.test(value)) score += 1;
+            if (/[0-9]/.test(value)) score += 1;
+            if (/[^A-Za-z0-9]/.test(value)) score += 1;
+            const map = [
+                { label: 'fraca', width: '25%', color: 'bg-red-500' },
+                { label: 'razoável', width: '50%', color: 'bg-amber-400' },
+                { label: 'boa', width: '75%', color: 'bg-blue-500' },
+                { label: 'forte', width: '100%', color: 'bg-emerald-500' }
+            ];
+            const current = map[Math.min(score, map.length - 1)];
+            bar.className = 'h-1 rounded-full ' + current.color;
+            bar.style.width = current.width;
+            text.textContent = 'Força da senha: ' + current.label;
+        };
+        input.addEventListener('input', update);
+        update();
+    })();
+</script>
+HTML;
+include __DIR__ . '/../templates/footer.php';
 
 

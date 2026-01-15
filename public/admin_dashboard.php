@@ -84,75 +84,79 @@ include __DIR__ . '/../templates/sidebar.php';
     <section class="flex-1 overflow-y-auto">
         <div class="mx-auto max-w-7xl px-6 pb-12 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="surface-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="surface-heading">Usuários</div>
-                        <div class="surface-subheading">Total de usuários</div>
-                        <div class="text-3xl font-bold mt-3"><?= sanitize((string) $totUsers); ?></div>
+                <div class="surface-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="surface-heading">Usuários</div>
+                            <div class="surface-subheading">Total de usuários</div>
+                            <div class="text-3xl font-bold mt-3"><?= sanitize((string) $totUsers); ?></div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-sm">
+                        <?php foreach ($usersByRole as $r): ?>
+                            <?php $percent = $totUsers > 0 ? round(((int) $r['cnt'] / $totUsers) * 100) : 0; ?>
+                            <div class="flex justify-between py-1">
+                                <span><?= sanitize($r['role']); ?></span>
+                                <span><?= sanitize((string) $r['cnt']); ?> (<?= $percent; ?>%)</span>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
-                <div class="mt-4 text-sm">
-                    <?php foreach ($usersByRole as $r): ?>
-                        <div class="flex justify-between py-1"><span><?= sanitize($r['role']); ?></span><span><?= sanitize((string) $r['cnt']); ?></span></div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
 
-            <div class="surface-card">
-                <div class="surface-heading">Equipamentos</div>
-                <div class="surface-subheading">Status atual</div>
-                <div class="mt-4 text-sm">
-                    <?php foreach ($equipStatus as $s): ?>
-                        <div class="flex justify-between py-1"><span><?= sanitize($s['status']); ?></span><span><?= sanitize((string) $s['cnt']); ?></span></div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-
-            <div class="surface-card">
-                <div class="surface-heading">Operações (14d)</div>
-                <div class="mt-4 h-56">
-                    <canvas id="opsChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="surface-card">
-                <div class="surface-heading">Operações recentes</div>
-                <div class="surface-table-wrapper mt-3">
-                    <table class="w-full">
-                        <thead class="surface-table-head">
-                        <tr>
-                            <th class="surface-table-cell">Tipo</th>
-                            <th class="surface-table-cell">Data</th>
-                            <th class="surface-table-cell">Usuário</th>
-                            <th class="surface-table-cell">Cliente</th>
-                        </tr>
-                        </thead>
-                        <tbody class="surface-table-body">
-                        <?php foreach ($recentOps as $op): ?>
-                            <tr>
-                                <td class="surface-table-cell"><?= sanitize($op['operation_type']); ?></td>
-                                <td class="surface-table-cell"><?= sanitize(format_datetime($op['operation_date'])); ?></td>
-                                <td class="surface-table-cell"><?= sanitize($op['user_name'] ?? '-'); ?></td>
-                                <td class="surface-table-cell"><?= sanitize($op['client_name'] ?? '-'); ?></td>
-                            </tr>
+                <div class="surface-card">
+                    <div class="surface-heading">Equipamentos</div>
+                    <div class="surface-subheading">Status atual</div>
+                    <div class="mt-4 text-sm">
+                        <?php foreach ($equipStatus as $s): ?>
+                            <div class="flex justify-between py-1"><span><?= sanitize($s['status']); ?></span><span><?= sanitize((string) $s['cnt']); ?></span></div>
                         <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                    </div>
+                </div>
+
+                <div class="surface-card">
+                    <div class="surface-heading">Operações (14d)</div>
+                    <div class="mt-4 h-56">
+                        <canvas id="opsChart"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <div class="surface-card">
-                <div class="surface-heading">Ações rápidas</div>
-                <div class="mt-3 space-y-3">
-                    <a href="usuarios.php" class="inline-block rounded-lg bg-blue-600 px-4 py-2 text-white">Gerenciar usuários</a>
-                    <a href="equipamentos.php" class="inline-block rounded-lg bg-blue-600 px-4 py-2 text-white">Gerenciar equipamentos</a>
-                    <a href="relatorios.php" class="inline-block rounded-lg bg-slate-700 px-4 py-2 text-white">Relatórios</a>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="surface-card">
+                    <div class="surface-heading">Operações recentes</div>
+                    <div class="surface-table-wrapper mt-3">
+                        <table class="w-full">
+                            <thead class="surface-table-head">
+                            <tr>
+                                <th class="surface-table-cell">Tipo</th>
+                                <th class="surface-table-cell">Data</th>
+                                <th class="surface-table-cell">Usuário</th>
+                                <th class="surface-table-cell">Cliente</th>
+                            </tr>
+                            </thead>
+                            <tbody class="surface-table-body">
+                            <?php foreach ($recentOps as $op): ?>
+                                <tr>
+                                    <td class="surface-table-cell"><?= sanitize($op['operation_type']); ?></td>
+                                    <td class="surface-table-cell"><?= sanitize(format_datetime($op['operation_date'])); ?></td>
+                                    <td class="surface-table-cell"><?= sanitize($op['user_name'] ?? '-'); ?></td>
+                                    <td class="surface-table-cell"><?= sanitize($op['client_name'] ?? '-'); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="surface-card">
+                    <div class="surface-heading">Ações rápidas</div>
+                    <div class="mt-3 flex flex-col gap-3">
+                    <a href="usuarios.php" title="Ir para usuários" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500">Gerenciar usuários</a>
+                    <a href="equipamentos.php" title="Ir para equipamentos" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500">Gerenciar equipamentos</a>
+                    <a href="relatorios.php" title="Ir para relatórios" class="inline-flex items-center justify-center rounded-xl bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-600">Relatórios</a>
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
     </section>
 

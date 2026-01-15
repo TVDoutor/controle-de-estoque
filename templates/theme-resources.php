@@ -69,6 +69,36 @@ declare(strict_types=1);
         })();
     </script>
     <script>
+        (function () {
+            var densityKey = 'ui-density';
+            var doc = document.documentElement;
+            var saved = null;
+            try {
+                saved = window.localStorage ? localStorage.getItem(densityKey) : null;
+            } catch (error) {
+                saved = null;
+            }
+            if (saved === 'compact') {
+                doc.dataset.density = 'compact';
+            }
+            window.UISettings = {
+                getDensity: function () {
+                    return doc.dataset.density || 'comfortable';
+                },
+                toggleDensity: function () {
+                    var next = this.getDensity() === 'compact' ? 'comfortable' : 'compact';
+                    doc.dataset.density = next === 'compact' ? 'compact' : '';
+                    try {
+                        window.localStorage && localStorage.setItem(densityKey, next);
+                    } catch (error) {
+                        // ignore storage errors
+                    }
+                    return next;
+                }
+            };
+        })();
+    </script>
+    <script>
         document.addEventListener('alpine:init', function () {
             var store = {
                 theme: window.UITheme ? window.UITheme.get() : 'dark',
@@ -312,6 +342,17 @@ declare(strict_types=1);
                 color: var(--ui-body-text);
             }
 
+            .surface-chip {
+                @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold;
+                background-color: var(--ui-surface-pill-bg);
+                color: var(--ui-surface-pill-text);
+            }
+
+            .surface-breadcrumbs {
+                @apply text-xs uppercase tracking-wide;
+                color: var(--ui-surface-muted);
+            }
+
             .surface-muted {
                 color: var(--ui-surface-muted);
             }
@@ -386,6 +427,17 @@ declare(strict_types=1);
         }
     </style>
     <style>
+        .surface-table-head th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        html[data-density='compact'] .surface-table-cell {
+            padding-top: 0.45rem !important;
+            padding-bottom: 0.45rem !important;
+        }
+
         html[data-theme='dark'] main {
             background: transparent;
         }
@@ -629,3 +681,48 @@ declare(strict_types=1);
     </style>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
     <style>[x-cloak]{display:none!important;}</style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function formatCnpj(value) {
+                var digits = (value || '').replace(/\D/g, '').slice(0, 14);
+                return digits.replace(/^(\d{2})(\d)/, '$1.$2')
+                    .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+                    .replace(/\.(\d{3})(\d)/, '.$1/$2')
+                    .replace(/(\d{4})(\d)/, '$1-$2');
+            }
+            function formatPhone(value) {
+                var digits = (value || '').replace(/\D/g, '').slice(0, 11);
+                if (digits.length <= 10) {
+                    return digits.replace(/^(\d{2})(\d)/, '($1) $2')
+                        .replace(/(\d{4})(\d)/, '$1-$2');
+                }
+                return digits.replace(/^(\d{2})(\d)/, '($1) $2')
+                    .replace(/(\d{5})(\d)/, '$1-$2');
+            }
+            document.querySelectorAll('[data-mask="cnpj"]').forEach(function (input) {
+                input.addEventListener('input', function () {
+                    input.value = formatCnpj(input.value);
+                });
+            });
+            document.querySelectorAll('[data-mask="phone"]').forEach(function (input) {
+                input.addEventListener('input', function () {
+                    input.value = formatPhone(input.value);
+                });
+            });
+
+            document.addEventListener('submit', function (event) {
+                var form = event.target;
+                if (!(form instanceof HTMLFormElement)) {
+                    return;
+                }
+                var button = form.querySelector('button[type="submit"]');
+                if (!button || button.disabled) {
+                    return;
+                }
+                var text = button.getAttribute('data-loading-text') || 'Processando...';
+                button.setAttribute('data-original-text', button.textContent || '');
+                button.textContent = text;
+                button.disabled = true;
+            }, true);
+        });
+    </script>

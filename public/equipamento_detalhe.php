@@ -23,22 +23,26 @@ $equipment = $stmt->fetch();
 
 if (!$equipment) {
     http_response_code(404);
-    exit('Equipamento no encontrado.');
+    exit('Equipamento não encontrado.');
 }
 
 $pageTitle = 'Equipamento ' . $equipment['asset_tag'];
 $activeMenu = 'equipamentos';
+$breadcrumbs = [
+    ['label' => 'Equipamentos', 'href' => 'equipamentos.php'],
+    ['label' => 'Detalhe']
+];
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validate_csrf_token($_POST['csrf_token'] ?? null)) {
-        $errors[] = 'Sesso expirada. Recarregue a pgina.';
+        $errors[] = 'Sessão expirada. Recarregue a página.';
     } else {
         $action = $_POST['action'] ?? '';
         if ($action === 'add_note') {
             $note = trim($_POST['note'] ?? '');
             if ($note === '') {
-                $errors[] = 'Escreva uma anotao.';
+                $errors[] = 'Escreva uma anotação.';
             } else {
                 $insert = $pdo->prepare('INSERT INTO equipment_notes (equipment_id, user_id, note) VALUES (:equipment_id, :user_id, :note)');
                 $insert->execute([
@@ -46,13 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'user_id' => current_user()['id'],
                     'note' => $note,
                 ]);
-                flash('success', 'Anotao adicionada.', 'success');
+                flash('success', 'Anotação adicionada.', 'success');
                 redirect('equipamento_detalhe.php?id=' . $equipmentId);
             }
         } elseif ($action === 'update_status' && user_has_role(['admin', 'gestor'])) {
             $status = $_POST['status'] ?? '';
             if (!in_array($status, ['em_estoque', 'alocado', 'manutencao', 'baixado'], true)) {
-                $errors[] = 'Status invlido.';
+                $errors[] = 'Status inválido.';
             } else {
                 $update = $pdo->prepare('UPDATE equipment SET status = :status, updated_at = NOW() WHERE id = :id');
                 $update->execute(['status' => $status, 'id' => $equipmentId]);
@@ -125,13 +129,13 @@ include __DIR__ . '/../templates/sidebar.php';
     <?php include __DIR__ . '/../templates/topbar.php'; ?>
     <section class="flex-1 overflow-y-auto px-6 pb-12 space-y-6">
         <?php if ($flash = flash('success')): ?>
-            <div class="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            <div class="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-200">
                 <?= sanitize($flash['message']); ?>
             </div>
         <?php endif; ?>
 
         <?php if ($errors): ?>
-            <div class="rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div class="rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-4 text-sm text-red-200">
                 <ul class="list-disc space-y-1 pl-5">
                     <?php foreach ($errors as $error): ?>
                         <li><?= sanitize($error); ?></li>
@@ -142,79 +146,100 @@ include __DIR__ . '/../templates/sidebar.php';
 
         <div class="grid gap-6 xl:grid-cols-3">
             <div class="xl:col-span-2 space-y-6">
-                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-lg font-semibold text-slate-800">Informações do equipamento</h2>
+                <div class="surface-card xl:sticky xl:top-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <h2 class="surface-heading">Informações do equipamento</h2>
+                        <div class="flex flex-wrap items-center gap-2 text-xs">
+                            <?php
+                                $statusBadge = match ($equipment['status']) {
+                                    'em_estoque' => 'bg-emerald-500/15 text-emerald-200 border border-emerald-500/40',
+                                    'alocado' => 'bg-blue-500/15 text-blue-200 border border-blue-500/40',
+                                    'manutencao' => 'bg-amber-500/15 text-amber-200 border border-amber-500/40',
+                                    'baixado' => 'bg-red-500/15 text-red-200 border border-red-500/40',
+                                    default => 'bg-slate-500/20 text-slate-200 border border-slate-500/40',
+                                };
+                            ?>
+                            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 font-semibold <?= $statusBadge; ?>">
+                                Status: <?= sanitize($equipment['status']); ?>
+                            </span>
+                            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 font-semibold bg-slate-500/20 text-slate-200 border border-slate-500/40">
+                                Condição: <?= sanitize($equipment['condition_status']); ?>
+                            </span>
+                        </div>
+                    </div>
                     <dl class="mt-4 grid gap-4 md:grid-cols-2">
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-slate-500">Etiqueta</dt>
-                            <dd class="text-sm font-semibold text-slate-700"><?= sanitize($equipment['asset_tag']); ?></dd>
+                            <dt class="text-xs uppercase tracking-wide surface-muted">Etiqueta</dt>
+                            <dd class="text-sm font-semibold"><?= sanitize($equipment['asset_tag']); ?></dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-slate-500">Modelo</dt>
-                            <dd class="text-sm text-slate-700"><?= sanitize($equipment['brand']); ?> <?= sanitize($equipment['model_name']); ?> <?= $equipment['monitor_size'] ? '(' . sanitize($equipment['monitor_size']) . '")' : ''; ?></dd>
+                            <dt class="text-xs uppercase tracking-wide surface-muted">Modelo</dt>
+                            <dd class="text-sm"><?= sanitize($equipment['brand']); ?> <?= sanitize($equipment['model_name']); ?> <?= $equipment['monitor_size'] ? '(' . sanitize($equipment['monitor_size']) . '")' : ''; ?></dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-slate-500">Número de série</dt>
-                            <dd class="text-sm text-slate-700"><?= sanitize($equipment['serial_number']); ?></dd>
+                            <dt class="text-xs uppercase tracking-wide surface-muted">Número de série</dt>
+                            <dd class="text-sm"><?= sanitize($equipment['serial_number']); ?></dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-slate-500">MAC Address</dt>
-                            <dd class="text-sm text-slate-700"><?= sanitize($equipment['mac_address']); ?></dd>
+                            <dt class="text-xs uppercase tracking-wide surface-muted">MAC Address</dt>
+                            <dd class="text-sm"><?= sanitize($equipment['mac_address']); ?></dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-slate-500">Entrada</dt>
-                            <dd class="text-sm text-slate-700"><?= format_date($equipment['entry_date']); ?></dd>
+                            <dt class="text-xs uppercase tracking-wide surface-muted">Entrada</dt>
+                            <dd class="text-sm"><?= format_date($equipment['entry_date']); ?></dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-slate-500">Lote</dt>
-                            <dd class="text-sm text-slate-700"><?= sanitize($equipment['batch']); ?></dd>
+                            <dt class="text-xs uppercase tracking-wide surface-muted">Lote</dt>
+                            <dd class="text-sm"><?= sanitize($equipment['batch']); ?></dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-slate-500">Status</dt>
-                            <dd class="text-sm font-semibold text-blue-700"><?= sanitize($equipment['status']); ?></dd>
+                            <dt class="text-xs uppercase tracking-wide surface-muted">Status</dt>
+                            <dd class="text-sm"><?= sanitize($equipment['status']); ?></dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-slate-500">Condições</dt>
-                            <dd class="text-sm text-slate-700"><?= sanitize($equipment['condition_status']); ?></dd>
+                            <dt class="text-xs uppercase tracking-wide surface-muted">Cliente atual</dt>
+                            <dd class="text-sm"><?= sanitize($equipment['cliente_nome'] ?? '-'); ?></dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-slate-500">Cliente atual</dt>
-                            <dd class="text-sm text-slate-700"><?= sanitize($equipment['cliente_nome'] ?? '-'); ?></dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs uppercase tracking-wide text-slate-500">Código do cliente</dt>
-                            <dd class="text-sm text-slate-700"><?= sanitize($equipment['client_code'] ?? '-'); ?></dd>
+                            <dt class="text-xs uppercase tracking-wide surface-muted">Código do cliente</dt>
+                            <dd class="text-sm"><?= sanitize($equipment['client_code'] ?? '-'); ?></dd>
                         </div>
                     </dl>
                     <?php if ($equipment['notes']): ?>
-                        <div class="mt-4 rounded border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                        <div class="mt-4 rounded-2xl border border-slate-700/50 bg-slate-950/60 px-4 py-3 text-sm surface-muted">
                             <?= nl2br(sanitize($equipment['notes'])); ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-lg font-semibold text-slate-800">Histórico</h2>
+                <div class="surface-card">
+                    <h2 class="surface-heading">Histórico</h2>
                     <div class="mt-4 space-y-4">
                         <?php if (!$history): ?>
-                            <p class="text-sm text-slate-500">Sem movimentações registradas.</p>
+                            <p class="text-sm surface-muted">Sem movimentações registradas.</p>
                         <?php endif; ?>
                         <?php foreach ($history as $item): ?>
-                            <div class="rounded-lg border border-slate-100 p-4">
+                            <div class="relative rounded-2xl border border-slate-800/60 bg-slate-950/60 p-4 pl-8">
+                                <span class="absolute left-3 top-4 h-2 w-2 rounded-full bg-blue-400"></span>
                                 <div class="flex items-center justify-between text-sm">
-                                    <span class="font-semibold text-slate-700"><?= sanitize($item['operation_type']); ?></span>
-                                    <span class="text-slate-500"><?= format_datetime($item['operation_date']); ?></span>
+                                    <span class="font-semibold"><?= sanitize($item['operation_type']); ?></span>
+                                    <span class="surface-muted"><?= format_datetime($item['operation_date']); ?></span>
                                 </div>
-                                <p class="mt-1 text-sm text-slate-600">Responsvel: <?= sanitize($item['usuario'] ?? '-'); ?></p>
+                                <p class="mt-1 text-sm surface-muted">Responsável: <?= sanitize($item['usuario'] ?? '-'); ?></p>
                                 <?php if ($item['cliente']): ?>
-                                    <p class="text-sm text-slate-600">Cliente: <?= sanitize($item['cliente']); ?></p>
+                                    <p class="text-sm surface-muted">Cliente: <?= sanitize($item['cliente']); ?></p>
                                 <?php endif; ?>
                                 <?php if ($item['operation_type'] === 'RETORNO'): ?>
-                                    <p class="text-xs text-slate-500 mt-2">Acessórios: Fonte <?= $item['accessories_power'] ? '' : ''; ?> - HDMI <?= $item['accessories_hdmi'] ? '' : ''; ?> - Controle <?= $item['accessories_remote'] ? '' : ''; ?></p>
-                                    <p class="text-xs text-slate-500">Condições aps retorno: <?= sanitize($item['condition_after_return'] ?? '-'); ?></p>
+                                    <p class="text-xs surface-muted mt-2">
+                                        Acessórios:
+                                        Fonte <?= $item['accessories_power'] ? 'Sim' : 'Não'; ?> ·
+                                        HDMI <?= $item['accessories_hdmi'] ? 'Sim' : 'Não'; ?> ·
+                                        Controle <?= $item['accessories_remote'] ? 'Sim' : 'Não'; ?>
+                                    </p>
+                                    <p class="text-xs surface-muted">Condição após retorno: <?= sanitize($item['condition_after_return'] ?? '-'); ?></p>
                                 <?php endif; ?>
                                 <?php if ($item['notes']): ?>
-                                    <p class="mt-2 text-xs text-slate-500">Obs: <?= sanitize($item['notes']); ?></p>
+                                    <p class="mt-2 text-xs surface-muted">Obs: <?= sanitize($item['notes']); ?></p>
                                 <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
@@ -223,48 +248,48 @@ include __DIR__ . '/../templates/sidebar.php';
             </div>
             <div class="space-y-6">
                 <?php if (user_has_role(['admin', 'gestor'])): ?>
-                    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                        <h2 class="text-lg font-semibold text-slate-800">Atualizar status</h2>
+                    <div class="surface-card">
+                        <h2 class="surface-heading">Atualizar status</h2>
                         <form method="post" class="mt-4 space-y-4">
                             <input type="hidden" name="csrf_token" value="<?= sanitize(ensure_csrf_token()); ?>">
                             <input type="hidden" name="action" value="update_status">
-                            <select name="status" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+                            <select name="status" class="surface-select">
                                 <option value="em_estoque" <?= $equipment['status'] === 'em_estoque' ? 'selected' : ''; ?>>Em estoque</option>
                                 <option value="alocado" <?= $equipment['status'] === 'alocado' ? 'selected' : ''; ?>>Alocado</option>
                                 <option value="manutencao" <?= $equipment['status'] === 'manutencao' ? 'selected' : ''; ?>>Manutenção</option>
                                 <option value="baixado" <?= $equipment['status'] === 'baixado' ? 'selected' : ''; ?>>Baixado</option>
                             </select>
-                            <button type="submit" class="w-full rounded-lg bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-900">Salvar</button>
+                            <button type="submit" class="w-full rounded-xl bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Salvar</button>
                         </form>
                     </div>
                 <?php endif; ?>
                 <?php if (user_has_role('admin')): ?>
-                    <div class="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
-                        <h2 class="text-lg font-semibold text-slate-800">Excluir equipamento</h2>
-                        <p class="text-sm text-slate-600">Atenção: esta ação é irreversível e removerá o equipamento e registros relacionados.</p>
+                    <div class="rounded-3xl border border-red-500/40 bg-red-500/10 p-6 shadow-xl shadow-red-900/20">
+                        <h2 class="text-lg font-semibold text-red-100">Excluir equipamento</h2>
+                        <p class="text-sm text-red-100/70">Atenção: esta ação é irreversível e removerá o equipamento e registros relacionados.</p>
                         <form method="post" onsubmit="return confirm('Confirma exclusão deste equipamento? Esta ação não pode ser desfeita.');" class="mt-4">
                             <input type="hidden" name="csrf_token" value="<?= sanitize(ensure_csrf_token()); ?>">
                             <input type="hidden" name="action" value="delete">
-                            <button type="submit" class="w-full rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Excluir equipamento</button>
+                            <button type="submit" class="w-full rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500">Excluir equipamento</button>
                         </form>
                     </div>
                 <?php endif; ?>
-                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-lg font-semibold text-slate-800">Anotaes</h2>
+                <div class="surface-card">
+                    <h2 class="surface-heading">Anotações</h2>
                     <form method="post" class="mt-4 space-y-3">
                         <input type="hidden" name="csrf_token" value="<?= sanitize(ensure_csrf_token()); ?>">
                         <input type="hidden" name="action" value="add_note">
-                        <textarea name="note" rows="3" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" placeholder="Registre observaes importantes..."></textarea>
-                        <button type="submit" class="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Adicionar anotação</button>
+                        <textarea id="equipmentNote" name="note" rows="3" class="surface-field" placeholder="Registre observações importantes..." data-equipment-id="<?= (int) $equipmentId; ?>"></textarea>
+                        <button type="submit" class="w-full rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500">Adicionar anotação</button>
                     </form>
-                    <div class="mt-4 space-y-3 text-sm text-slate-600">
+                    <div class="mt-4 space-y-3 text-sm">
                         <?php if (!$notes): ?>
-                            <p class="text-sm text-slate-500">Nenhuma anotação registrada.</p>
+                            <p class="text-sm surface-muted">Nenhuma anotação registrada.</p>
                         <?php endif; ?>
                         <?php foreach ($notes as $note): ?>
-                            <div class="rounded border border-slate-100 bg-slate-50 px-3 py-2">
+                            <div class="rounded-2xl border border-slate-800/50 bg-slate-950/60 px-3 py-2">
                                 <p><?= nl2br(sanitize($note['note'])); ?></p>
-                                <p class="mt-1 text-xs text-slate-500">Por <?= sanitize($note['name']); ?> em <?= format_datetime($note['created_at']); ?></p>
+                                <p class="mt-1 text-xs surface-muted">Por <?= sanitize($note['name']); ?> em <?= format_datetime($note['created_at']); ?></p>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -272,7 +297,32 @@ include __DIR__ . '/../templates/sidebar.php';
             </div>
         </div>
     </section>
-<?php include __DIR__ . '/../templates/footer.php';
+<?php
+$footerScripts = <<<HTML
+<script>
+    (function () {
+        const note = document.getElementById('equipmentNote');
+        if (!note) return;
+        const equipmentId = note.dataset.equipmentId || 'default';
+        const key = 'equipmentNoteDraft:' + equipmentId;
+        const saved = localStorage.getItem(key);
+        if (saved && note.value.trim() === '') {
+            note.value = saved;
+        }
+        let timer;
+        note.addEventListener('input', () => {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                localStorage.setItem(key, note.value);
+            }, 300);
+        });
+        note.form?.addEventListener('submit', () => {
+            localStorage.removeItem(key);
+        });
+    })();
+</script>
+HTML;
+include __DIR__ . '/../templates/footer.php';
 
 
 

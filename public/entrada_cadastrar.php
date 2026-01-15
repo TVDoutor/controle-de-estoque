@@ -334,14 +334,16 @@ include __DIR__ . '/../templates/sidebar.php';
                     </div>
                 </section>
 
-                <section class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-900/30">
-                    <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Seção 3</p>
-                            <h2 class="text-lg font-semibold text-white">Detalhes de software e controle</h2>
+                <details class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-900/30">
+                    <summary class="cursor-pointer list-none">
+                        <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                            <div>
+                                <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Seção 3</p>
+                                <h2 class="text-lg font-semibold text-white">Detalhes de software e controle (avançado)</h2>
+                            </div>
+                            <p class="text-sm text-slate-400 sm:max-w-sm">Opcional. Expanda para registrar dados internos.</p>
                         </div>
-                        <p class="text-sm text-slate-400 sm:max-w-sm">Quais são os dados internos e de sistema deste aparelho?</p>
-                    </header>
+                    </summary>
                     <div class="mt-6 grid gap-5 md:grid-cols-2">
                         <div>
                             <label class="text-sm font-medium text-slate-300" for="player_id">ID do Player</label>
@@ -364,7 +366,7 @@ include __DIR__ . '/../templates/sidebar.php';
                             <input type="text" id="batch" name="batch" value="<?= sanitize($formValues['batch']); ?>" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white focus:border-blue-400 focus:outline-none focus:ring-0" placeholder="Número ou identificação do lote">
                         </div>
                     </div>
-                </section>
+                </details>
 
                 <section class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-900/30">
                     <header>

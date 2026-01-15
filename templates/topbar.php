@@ -5,6 +5,20 @@ declare(strict_types=1);
 ?>
 <header class="surface-topbar">
     <div>
+        <?php if (!empty($breadcrumbs) && is_array($breadcrumbs)): ?>
+            <nav class="surface-breadcrumbs mb-1">
+                <?php foreach ($breadcrumbs as $index => $crumb): ?>
+                    <?php if (!empty($crumb['href'])): ?>
+                        <a class="hover:text-blue-300" href="<?= sanitize($crumb['href']); ?>"><?= sanitize($crumb['label'] ?? ''); ?></a>
+                    <?php else: ?>
+                        <span><?= sanitize($crumb['label'] ?? ''); ?></span>
+                    <?php endif; ?>
+                    <?php if ($index < count($breadcrumbs) - 1): ?>
+                        <span class="mx-1">/</span>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </nav>
+        <?php endif; ?>
         <h1 class="text-xl font-semibold text-slate-100">
             <?= sanitize($pageTitle ?? ''); ?>
         </h1>
@@ -22,6 +36,15 @@ declare(strict_types=1);
                  get theme() { return $store.uiTheme.theme; },
                  toggle() { $store.uiTheme.toggle(); }
              }">
+            <?php if (!empty($showDensityToggle)): ?>
+                <button type="button"
+                        class="surface-icon-button"
+                        onclick="window.UISettings && UISettings.toggleDensity()"
+                        aria-label="Alternar densidade da tabela"
+                        title="Alternar densidade da tabela">
+                    <span class="material-icons-outlined text-lg">view_headline</span>
+                </button>
+            <?php endif; ?>
             <button type="button"
                     class="surface-icon-button"
                     @click="toggle()"

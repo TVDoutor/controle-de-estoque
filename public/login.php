@@ -90,15 +90,26 @@ $csrfToken = ensure_csrf_token();
                        value="<?= sanitize($_POST['email'] ?? ''); ?>"
                        class="surface-field"
                        autocomplete="email">
+                <p id="loginEmailHint" class="mt-1 text-xs text-slate-400">Use o e-mail corporativo cadastrado.</p>
             </div>
-            <div>
+            <div x-data="{ show: false }">
                 <label for="password" class="text-sm font-medium text-slate-200">Senha</label>
-                <input type="password"
-                       id="password"
-                       name="password"
-                       required
-                       class="surface-field"
-                       autocomplete="current-password">
+                <div class="relative">
+                    <input :type="show ? 'text' : 'password'"
+                           id="password"
+                           name="password"
+                           required
+                           class="surface-field pr-12"
+                           autocomplete="current-password">
+                    <button type="button"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-100"
+                            @click="show = !show"
+                            :aria-label="show ? 'Ocultar senha' : 'Mostrar senha'">
+                        <span class="material-icons-outlined text-base" x-show="!show" x-cloak>visibility</span>
+                        <span class="material-icons-outlined text-base" x-show="show" x-cloak>visibility_off</span>
+                    </button>
+                </div>
+                <p id="loginPasswordHint" class="mt-1 text-xs text-slate-400">Senha mínima de 6 caracteres.</p>
             </div>
             <button type="submit" class="w-full rounded-lg bg-blue-500 px-4 py-3 font-semibold text-white transition hover:bg-blue-600">Entrar</button>
         </form>
@@ -107,5 +118,44 @@ $csrfToken = ensure_csrf_token();
             <a href="recuperar_senha.php" class="text-blue-300 hover:text-blue-200">Esqueci minha senha</a>
         </div>
     </div>
+    <script>
+        (function () {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailHint = document.getElementById('loginEmailHint');
+            const passwordHint = document.getElementById('loginPasswordHint');
+            if (!emailInput || !passwordInput || !emailHint || !passwordHint) {
+                return;
+            }
+            const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            const updateEmail = () => {
+                if (emailInput.value === '') {
+                    emailHint.textContent = 'Use o e-mail corporativo cadastrado.';
+                    emailHint.className = 'mt-1 text-xs text-slate-400';
+                    return;
+                }
+                if (isValidEmail(emailInput.value)) {
+                    emailHint.textContent = 'E-mail válido.';
+                    emailHint.className = 'mt-1 text-xs text-emerald-300';
+                } else {
+                    emailHint.textContent = 'E-mail inválido.';
+                    emailHint.className = 'mt-1 text-xs text-red-300';
+                }
+            };
+            const updatePassword = () => {
+                if (passwordInput.value.length >= 6) {
+                    passwordHint.textContent = 'Senha ok.';
+                    passwordHint.className = 'mt-1 text-xs text-emerald-300';
+                } else {
+                    passwordHint.textContent = 'Senha mínima de 6 caracteres.';
+                    passwordHint.className = 'mt-1 text-xs text-slate-400';
+                }
+            };
+            emailInput.addEventListener('input', updateEmail);
+            passwordInput.addEventListener('input', updatePassword);
+            updateEmail();
+            updatePassword();
+        })();
+    </script>
 </body>
 </html>

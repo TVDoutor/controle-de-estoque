@@ -3,6 +3,25 @@
 declare(strict_types=1);
 
 ?>
+<?php
+if (!isset($navigation)) {
+    $navigation = [
+        ['label' => 'Dashboard', 'path' => 'dashboard.php', 'icon' => 'space_dashboard', 'key' => 'dashboard'],
+        ['label' => 'Equipamentos', 'path' => 'equipamentos.php', 'icon' => 'inventory_2', 'key' => 'equipamentos'],
+        ['label' => 'Entradas', 'path' => 'entrada_cadastrar.php', 'icon' => 'move_to_inbox', 'key' => 'entradas'],
+        ['label' => 'Saidas', 'path' => 'saida_registrar.php', 'icon' => 'outbox', 'key' => 'saidas'],
+        ['label' => 'Retornos', 'path' => 'retornos.php', 'icon' => 'assignment_return', 'key' => 'retornos'],
+        ['label' => 'Clientes', 'path' => 'clientes.php', 'icon' => 'group', 'key' => 'clientes'],
+        ['label' => 'Relatorios', 'path' => 'relatorios.php', 'icon' => 'bar_chart', 'key' => 'relatorios'],
+        ['label' => 'Configuracoes', 'path' => 'configuracoes.php', 'icon' => 'settings', 'key' => 'configuracoes'],
+    ];
+
+    if (user_has_role('admin')) {
+        array_unshift($navigation, ['label' => 'Admin', 'path' => 'admin_dashboard.php', 'icon' => 'admin_panel_settings', 'key' => 'admin_dashboard']);
+        $navigation[] = ['label' => 'Usuarios', 'path' => 'usuarios.php', 'icon' => 'manage_accounts', 'key' => 'usuarios'];
+    }
+}
+?>
 <div class="md:hidden w-full" x-data="{ open: false }">
     <div class="surface-topbar px-4 py-3 md:hidden">
         <div>
@@ -30,21 +49,24 @@ declare(strict_types=1);
     </div>
     <div class="surface-panel border-t surface-divider" x-show="open" x-cloak>
         <nav class="px-4 py-3 space-y-2 text-sm">
-            <a href="dashboard.php" class="block rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">Dashboard</a>
-            <a href="equipamentos.php" class="block rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">Equipamentos</a>
-            <a href="entrada_cadastrar.php" class="block rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">Entradas</a>
-            <a href="saida_registrar.php" class="block rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">Saídas</a>
-            <a href="retornos.php" class="block rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">Retornos</a>
-            <a href="clientes.php" class="block rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">Clientes</a>
-            <a href="relatorios.php" class="block rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">Relatórios</a>
-            <a href="configuracoes.php" class="block rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">Configurações</a>
-            <?php if (user_has_role('admin')): ?>
-                <a href="usuarios.php" class="block rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">Usuários</a>
-            <?php endif; ?>
-            <a href="perfil.php" class="block rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">Meu Perfil</a>
+            <?php foreach ($navigation as $item): ?>
+                <?php $isActive = ($activeMenu ?? '') === $item['key']; ?>
+                <a href="<?= sanitize($item['path']); ?>"
+                   class="flex items-center gap-2 rounded-lg px-3 py-2 transition <?= $isActive ? 'bg-blue-500/15 text-blue-200' : 'text-slate-300 hover:bg-blue-500/10 hover:text-blue-500'; ?>">
+                    <span class="material-icons-outlined text-base"><?= sanitize($item['icon']); ?></span>
+                    <span><?= sanitize($item['label']); ?></span>
+                </a>
+            <?php endforeach; ?>
+            <a href="perfil.php" class="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-300 transition hover:bg-blue-500/10 hover:text-blue-500">
+                <span class="material-icons-outlined text-base">account_circle</span>
+                <span>Meu Perfil</span>
+            </a>
             <form action="logout.php" method="post" class="pt-2">
                 <input type="hidden" name="csrf_token" value="<?= sanitize(ensure_csrf_token()); ?>">
-                <button type="submit" class="w-full text-left text-sm text-red-300 transition hover:text-red-400">Sair</button>
+                <button type="submit" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-300 transition hover:text-red-400">
+                    <span class="material-icons-outlined text-base">logout</span>
+                    <span>Sair</span>
+                </button>
             </form>
         </nav>
     </div>
