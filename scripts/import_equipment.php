@@ -67,7 +67,7 @@ function detect_delimiter(string $line): string
 
 function format_mac(string $mac): string
 {
-    $clean = preg_replace('/[^0-9a-fA-F]/', '', $mac);
+    $clean = preg_replace('/[^0-9a-zA-Z]/', '', $mac);
     if (strlen($clean) !== 12) {
         return '';
     }

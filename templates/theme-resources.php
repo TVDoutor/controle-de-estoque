@@ -708,9 +708,7 @@ declare(strict_types=1);
                 input.addEventListener('input', function () {
                     input.value = formatPhone(input.value);
                 });
-            });
-
-            document.addEventListener('submit', function (event) {
+            });            document.addEventListener('submit', function (event) {
                 var form = event.target;
                 if (!(form instanceof HTMLFormElement)) {
                     return;

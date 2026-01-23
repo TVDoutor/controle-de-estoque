@@ -225,10 +225,19 @@
 
 - `README.md`: instrucoes gerais de setup, perfis e proximos passos sugeridos (logs, filtros avancados, anexos, automacao de deploy/backups).
 - `README_DEPLOY.md`: checklist especifico para HostGator (permissoes, SSL, import, limpeza de arquivos de debug).
+- `PRD.md`: PRD original do sistema.
+- `PRD_COMPLETO.md`: PRD detalhado e atualizado com requisitos funcionais, nao funcionais, regras de negocio, arquitetura, metricas e roadmap completo.
 - `data/import/equipment_import_sample.csv`: formato esperado para importacao em massa (colunas minimas e opcionais descritas no README).
 - `.htaccess` + `.user.ini`: configuram reescrita/seguranca no Apache (HTTPS forcado conforme README).
 - Logs `php-server.err.log/php-server.out.log`: auxiliares para suporte em dev.
 
 ---
 
-Este documento cobre todas as rotas, fluxos e entidades presentes no repositorio em `c:\Users\hilca\OneDrive\Documentos\Projetos Sites\SIstema Estoque`, servindo como referencia unica para evolucao, auditoria e onboarding de novos colaboradores.
+## 8. Atualizacoes recentes (Janeiro 2026)
+
+- **Campo MAC Address**: Atualizado para aceitar caracteres alfanumericos (nao apenas hexadecimal). Validacao ajustada em `entrada_cadastrar.php` e `scripts/import_equipment.php`.
+- **UI/UX**: Corrigidos titulos de secoes com problema de contraste (fonte branca em fundo cinza). Agora utilizam `text-slate-800 dark:text-white` para melhor legibilidade em ambos os temas.
+
+---
+
+Este documento cobre todas as rotas, fluxos e entidades presentes no repositorio, servindo como referencia unica para evolucao, auditoria e onboarding de novos colaboradores. Para requisitos detalhados, consulte `PRD_COMPLETO.md`.

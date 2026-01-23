@@ -11,6 +11,8 @@ $pageTitle = 'Equipamentos';
 $activeMenu = 'equipamentos';
 $showDensityToggle = true;
 $pdo = get_pdo();
+$user = current_user();
+$canManage = user_has_role(['admin', 'gestor']);
 
 $status = $_GET['status'] ?? '';
 $condition = $_GET['condition'] ?? '';
@@ -118,27 +120,50 @@ include __DIR__ . '/../templates/sidebar.php';
                     </div>
                     <details class="rounded-2xl border border-slate-800 bg-slate-950/60 px-4 py-3">
                         <summary class="cursor-pointer text-xs uppercase tracking-wide text-slate-400">Filtros avançados</summary>
-                        <div class="mt-3 grid gap-3 md:grid-cols-3">
-                            <select name="status" class="surface-select-compact">
-                                <option value="">Status (todos)</option>
-                                <option value="em_estoque" <?= $status === 'em_estoque' ? 'selected' : ''; ?>>Em estoque</option>
-                                <option value="alocado" <?= $status === 'alocado' ? 'selected' : ''; ?>>Alocado</option>
-                                <option value="manutencao" <?= $status === 'manutencao' ? 'selected' : ''; ?>>Manutenção</option>
-                                <option value="baixado" <?= $status === 'baixado' ? 'selected' : ''; ?>>Baixado</option>
-                            </select>
-                            <select name="condition" class="surface-select-compact">
-                                <option value="">Condição</option>
-                                <option value="novo" <?= $condition === 'novo' ? 'selected' : ''; ?>>Novo</option>
-                                <option value="usado" <?= $condition === 'usado' ? 'selected' : ''; ?>>Usado</option>
-                            </select>
-                            <input type="text" name="modelo" placeholder="Marca ou modelo" value="<?= sanitize($modelo); ?>" class="surface-field-compact">
+                        <div class="mt-3 space-y-3">
+                            <div class="grid gap-3 md:grid-cols-3">
+                                <select name="status" class="surface-select-compact">
+                                    <option value="">Status (todos)</option>
+                                    <option value="em_estoque" <?= $status === 'em_estoque' ? 'selected' : ''; ?>>Em estoque</option>
+                                    <option value="alocado" <?= $status === 'alocado' ? 'selected' : ''; ?>>Alocado</option>
+                                    <option value="manutencao" <?= $status === 'manutencao' ? 'selected' : ''; ?>>Manutenção</option>
+                                    <option value="baixado" <?= $status === 'baixado' ? 'selected' : ''; ?>>Baixado</option>
+                                </select>
+                                <select name="condition" class="surface-select-compact">
+                                    <option value="">Condição</option>
+                                    <option value="novo" <?= $condition === 'novo' ? 'selected' : ''; ?>>Novo</option>
+                                    <option value="usado" <?= $condition === 'usado' ? 'selected' : ''; ?>>Usado</option>
+                                </select>
+                                <input type="text" name="modelo" placeholder="Marca ou modelo" value="<?= sanitize($modelo); ?>" class="surface-field-compact">
+                            </div>
+                            <div class="flex justify-end pt-2 border-t border-slate-700">
+                                <button type="submit" class="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition inline-flex items-center gap-2">
+                                    <span class="material-icons-outlined text-base">check</span>
+                                    Aplicar Filtros
+                                </button>
+                            </div>
                         </div>
                     </details>
                 </form>
-                <div class="flex gap-3 text-sm">
-                    <a href="saida_registrar.php" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-500">Registrar saída</a>
-                    <a href="entrada_cadastrar.php" class="inline-flex items-center justify-center rounded-xl border border-blue-600 px-4 py-2 font-semibold text-blue-200 hover:bg-blue-500/10">Cadastrar entrada</a>
+                <?php if ($canManage): ?>
+                <div class="flex flex-wrap gap-3 text-sm">
+                    <a href="entrada_cadastrar.php" 
+                       class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 font-semibold text-white hover:bg-emerald-500 transition shadow-lg shadow-emerald-500/20">
+                        <span class="material-icons-outlined text-lg">move_to_inbox</span>
+                        <span>Cadastrar Entrada</span>
+                    </a>
+                    <a href="saida_registrar.php" 
+                       class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-500 transition shadow-lg shadow-blue-500/20">
+                        <span class="material-icons-outlined text-lg">outbox</span>
+                        <span>Registrar Saída</span>
+                    </a>
+                    <a href="retornos.php" 
+                       class="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-5 py-2.5 font-semibold text-white hover:bg-amber-500 transition shadow-lg shadow-amber-500/20">
+                        <span class="material-icons-outlined text-lg">assignment_return</span>
+                        <span>Registrar Retorno</span>
+                    </a>
                 </div>
+                <?php endif; ?>
             </div>
             <?php if ($search !== '' || $status !== '' || $condition !== '' || $modelo !== ''): ?>
                 <div class="mt-4 flex flex-wrap gap-2">
@@ -244,7 +269,27 @@ include __DIR__ . '/../templates/sidebar.php';
                                 <td class="surface-table-cell surface-muted" data-col="condition"><?= sanitize($item['condition_status']); ?></td>
                                 <td class="surface-table-cell surface-muted" data-col="client"><?= sanitize($item['cliente'] ?? '-'); ?></td>
                                 <td class="surface-table-cell text-right">
-                                    <a href="equipamento_detalhe.php?id=<?= (int) $item['id']; ?>" class="text-xs font-semibold text-blue-300 hover:text-blue-200">Detalhes</a>
+                                    <div class="flex items-center justify-end gap-3">
+                                        <a href="equipamento_detalhe.php?id=<?= (int) $item['id']; ?>" 
+                                           class="text-xs font-semibold text-blue-300 hover:text-blue-200 transition">
+                                            Detalhes
+                                        </a>
+                                        <?php if ($canManage): ?>
+                                            <a href="equipamento_detalhe.php?id=<?= (int) $item['id']; ?>&edit=1" 
+                                               class="text-xs font-semibold text-emerald-300 hover:text-emerald-200 transition inline-flex items-center gap-1">
+                                                <span class="material-icons-outlined text-sm">edit</span>
+                                                Editar
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if (user_has_role('admin')): ?>
+                                            <button type="button"
+                                                    onclick="confirmDelete(<?= (int) $item['id']; ?>, '<?= sanitize($item['asset_tag']); ?>')"
+                                                    class="text-xs font-semibold text-red-300 hover:text-red-200 transition inline-flex items-center gap-1">
+                                                <span class="material-icons-outlined text-sm">delete</span>
+                                                Excluir
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -252,10 +297,98 @@ include __DIR__ . '/../templates/sidebar.php';
                 </table>
             </div>
         </div>
+
+        <!-- Modal de Confirmação de Exclusão -->
+        <div id="deleteEquipmentModal" 
+             x-data="{ 
+                isOpen: false,
+                equipmentId: 0,
+                equipmentTag: '',
+                submitDelete() {
+                    const form = document.getElementById('deleteEquipmentForm');
+                    if (form) {
+                        form.submit();
+                    }
+                }
+             }"
+             x-show="isOpen"
+             x-cloak
+             @keydown.escape.window="isOpen = false"
+             class="fixed inset-0 z-50 flex items-center justify-center p-4"
+             style="display: none;">
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-black/70 backdrop-blur-sm" 
+                 @click="isOpen = false"></div>
+            
+            <!-- Modal Content -->
+            <div class="relative z-10 w-full max-w-md surface-card"
+                 @click.stop>
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold text-red-100 mb-2">Confirmar Exclusão</h3>
+                    <p class="text-sm text-slate-300 mb-1">Deseja realmente excluir o equipamento <strong x-text="equipmentTag"></strong>?</p>
+                    <p class="text-xs text-red-300/80 mt-2">⚠️ Esta ação é irreversível e removerá o equipamento e todos os registros relacionados.</p>
+                </div>
+                <form id="deleteEquipmentForm" 
+                      method="post" 
+                      x-bind:action="'equipamento_detalhe.php?id=' + equipmentId"
+                      class="space-y-3">
+                    <input type="hidden" name="csrf_token" value="<?= sanitize(ensure_csrf_token()); ?>">
+                    <input type="hidden" name="action" value="delete">
+                    <div class="flex justify-end gap-3">
+                        <button type="button" 
+                                @click="isOpen = false"
+                                class="rounded-xl border border-slate-600 px-6 py-2.5 text-sm font-semibold text-slate-200 hover:bg-slate-800/40 transition">
+                            Cancelar
+                        </button>
+                        <button type="button" 
+                                @click="submitDelete()"
+                                class="rounded-xl bg-red-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-red-500 transition">
+                            Excluir
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </section>
 <?php
 $footerScripts = <<<HTML
 <script>
+    // Função para confirmar exclusão de equipamento
+    function confirmDelete(equipmentId, equipmentTag) {
+        const modal = document.getElementById('deleteEquipmentModal');
+        if (modal && modal._x_dataStack && modal._x_dataStack[0]) {
+            modal._x_dataStack[0].equipmentId = equipmentId;
+            modal._x_dataStack[0].equipmentTag = equipmentTag;
+            modal._x_dataStack[0].isOpen = true;
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    // Fechar modal ao clicar fora ou pressionar ESC
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('deleteEquipmentModal', () => ({
+            isOpen: false,
+            equipmentId: 0,
+            equipmentTag: '',
+            init() {
+                window.addEventListener('click', (e) => {
+                    if (e.target.id === 'deleteEquipmentModal' && this.isOpen) {
+                        this.isOpen = false;
+                        document.body.style.overflow = '';
+                    }
+                });
+            },
+            submitDelete() {
+                const form = document.getElementById('deleteEquipmentForm');
+                if (form) {
+                    this.isOpen = false;
+                    document.body.style.overflow = '';
+                    form.submit();
+                }
+            }
+        }));
+    });
+
     (function () {
         const form = document.getElementById('equipmentFiltersForm');
         const saveBtn = document.getElementById('saveEquipmentFilters');

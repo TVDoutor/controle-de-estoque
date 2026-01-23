@@ -30,6 +30,8 @@ $formValues = [
     'model_id' => (int) ($_POST['model_id'] ?? 0),
     'serial_number' => $_POST['serial_number'] ?? '',
     'mac_address' => $_POST['mac_address'] ?? '',
+    'purchase_date' => $_POST['purchase_date'] ?? '',
+    'supplier' => $_POST['supplier'] ?? '',
     'condition_status' => $_POST['condition_status'] ?? 'novo',
     'entry_date' => $_POST['entry_date'] ?? date('Y-m-d'),
     'batch' => $_POST['batch'] ?? '',
@@ -38,8 +40,6 @@ $formValues = [
     'player_legacy_id' => $_POST['player_legacy_id'] ?? '',
     'os_version' => $_POST['os_version'] ?? '',
     'app_version' => $_POST['app_version'] ?? '',
-    'is_discarded' => isset($_POST['is_discarded']) && $_POST['is_discarded'] === '1' ? '1' : '0',
-    'is_unlinked' => isset($_POST['is_unlinked']) && $_POST['is_unlinked'] === '1' ? '1' : '0',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -50,6 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $modelId = (int) ($_POST['model_id'] ?? 0);
         $serial = strtoupper(trim((string) ($_POST['serial_number'] ?? '')));
         $macInput = trim((string) ($_POST['mac_address'] ?? ''));
+        $purchaseDate = trim((string) ($_POST['purchase_date'] ?? ''));
+        $supplier = trim((string) ($_POST['supplier'] ?? ''));
         $condition = $_POST['condition_status'] ?? 'novo';
         $entryDate = $_POST['entry_date'] ?? date('Y-m-d');
         $batch = trim((string) ($_POST['batch'] ?? ''));
@@ -58,8 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $playerLegacyId = trim((string) ($_POST['player_legacy_id'] ?? ''));
         $osVersion = trim((string) ($_POST['os_version'] ?? ''));
         $appVersion = trim((string) ($_POST['app_version'] ?? ''));
-        $isDiscarded = isset($_POST['is_discarded']) && $_POST['is_discarded'] === '1';
-        $isUnlinked = isset($_POST['is_unlinked']) && $_POST['is_unlinked'] === '1';
 
         if ($serial === '') {
             $errors[] = 'Informe o número de série.';
@@ -79,8 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($macInput !== '') {
             $normalizedMac = strtoupper(str_replace(['-', ':', ' '], '', $macInput));
-            if (!preg_match('/^[0-9A-F]{12}$/', $normalizedMac)) {
-                $errors[] = 'Endereço MAC inválido. Use o formato XX:XX:XX:XX:XX:XX.';
+            if (!preg_match('/^[0-9A-Z]{12}$/', $normalizedMac)) {
+                $errors[] = 'Endereço MAC inválido. Use o formato XX:XX:XX:XX:XX:XX com caracteres alfanuméricos.';
             } else {
                 $macInput = implode(':', str_split($normalizedMac, 2));
             }
@@ -89,6 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $formValues['asset_tag'] = $assetTag;
         $formValues['serial_number'] = $serial;
         $formValues['mac_address'] = $macInput;
+        $formValues['purchase_date'] = $purchaseDate;
+        $formValues['supplier'] = $supplier;
         $formValues['condition_status'] = $condition;
         $formValues['entry_date'] = $entryDate;
         $formValues['batch'] = $batch;
@@ -97,8 +99,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $formValues['player_legacy_id'] = $playerLegacyId;
         $formValues['os_version'] = $osVersion;
         $formValues['app_version'] = $appVersion;
-        $formValues['is_discarded'] = $isDiscarded ? '1' : '0';
-        $formValues['is_unlinked'] = $isUnlinked ? '1' : '0';
 
         if (!in_array($condition, ['novo', 'usado'], true)) {
             $errors[] = 'Condição inválida.';
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $pdo->beginTransaction();
 
-                $status = $isDiscarded ? 'baixado' : 'em_estoque';
+                $status = 'em_estoque';
 
                 $insertEquipment = $pdo->prepare(<<<SQL
                     INSERT INTO equipment (asset_tag, model_id, serial_number, mac_address, condition_status, status, entry_date, batch, notes, created_by)
@@ -163,32 +163,14 @@ SQL);
                     'Versão do App' => $appVersion,
                 ], static fn (string $value): bool => $value !== '');
 
-                $flags = [];
-                if ($isDiscarded) {
-                    $flags[] = 'Equipamento marcado como descartado no cadastro inicial.';
-                }
-                if ($isUnlinked) {
-                    $flags[] = 'Equipamento marcado como desvinculado no cadastro inicial.';
-                }
-
-                if ($technicalDetails || $flags) {
-                    $sections = [];
-                    if ($technicalDetails) {
-                        $lines = [];
-                        foreach ($technicalDetails as $label => $value) {
-                            $lines[] = $label . ': ' . $value;
-                        }
-                        $sections[] = "Detalhes técnicos registrados no cadastro:
+                if ($technicalDetails) {
+                    $lines = [];
+                    foreach ($technicalDetails as $label => $value) {
+                        $lines[] = $label . ': ' . $value;
+                    }
+                    $extraNote = "Detalhes técnicos registrados no cadastro:
 " . implode("
 ", $lines);
-                    }
-                    if ($flags) {
-                        $sections[] = implode("
-", $flags);
-                    }
-                    $extraNote = implode("
-
-", $sections);
                     $insertNote = $pdo->prepare('INSERT INTO equipment_notes (equipment_id, user_id, note) VALUES (:equipment_id, :user_id, :note)');
                     $insertNote->execute([
                         'equipment_id' => $equipmentId,
@@ -244,7 +226,7 @@ include __DIR__ . '/../templates/sidebar.php';
                     <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                             <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Seção 1</p>
-                            <h2 class="text-lg font-semibold text-white">Identificação física</h2>
+                            <h2 class="text-lg font-semibold text-slate-800 dark:text-white">Cadastro de Equipamentos</h2>
                         </div>
                         <p class="text-sm text-slate-400 sm:max-w-sm">Preciso registrar o aparelho que estou segurando.</p>
                     </header>
@@ -256,7 +238,7 @@ include __DIR__ . '/../templates/sidebar.php';
                         </div>
                         <div class="md:col-span-1">
                             <label class="text-sm font-medium text-slate-300" for="mac_address">Endereço MAC</label>
-                            <input type="text" id="mac_address" name="mac_address" x-model="form.mac" @input="formatMac($event.target.value)" value="<?= sanitize($formValues['mac_address']); ?>" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white focus:border-blue-400 focus:outline-none focus:ring-0" placeholder="XX:XX:XX:XX:XX:XX" pattern="^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$" inputmode="text" autocomplete="off">
+                            <input type="text" id="mac_address" name="mac_address" x-model="form.mac" @input="formatMac($event.target.value)" value="<?= sanitize($formValues['mac_address']); ?>" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white focus:border-blue-400 focus:outline-none focus:ring-0" placeholder="XX:XX:XX:XX:XX:XX" pattern="^([0-9A-Za-z]{2}:){5}[0-9A-Za-z]{2}$" inputmode="text" autocomplete="off">
                             <p class="mt-1 text-xs text-slate-400">Formato automático: letras maiúsculas e separação por dois pontos.</p>
                         </div>
                         <div class="md:col-span-1">
@@ -292,6 +274,14 @@ include __DIR__ . '/../templates/sidebar.php';
                                 </div>
                             </div>
                         </div>
+                        <div class="md:col-span-1">
+                            <label class="text-sm font-medium text-slate-300" for="purchase_date">Data da compra</label>
+                            <input type="date" id="purchase_date" name="purchase_date" value="<?= sanitize($formValues['purchase_date']); ?>" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white focus:border-blue-400 focus:outline-none focus:ring-0">
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="text-sm font-medium text-slate-300" for="supplier">Fornecedor</label>
+                            <input type="text" id="supplier" name="supplier" value="<?= sanitize($formValues['supplier']); ?>" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white focus:border-blue-400 focus:outline-none focus:ring-0" placeholder="Nome do fornecedor">
+                        </div>
                     </div>
                 </section>
 
@@ -299,13 +289,12 @@ include __DIR__ . '/../templates/sidebar.php';
                     <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                             <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Seção 2</p>
-                            <h2 class="text-lg font-semibold text-white">Diagnóstico e status</h2>
+                            <h2 class="text-lg font-semibold text-slate-800 dark:text-white">Diagnóstico e status</h2>
                         </div>
-                        <p class="text-sm text-slate-400 sm:max-w-sm">Qual o estado deste equipamento que recebi?</p>
                     </header>
-                    <div class="mt-6 grid gap-5 lg:grid-cols-[1fr_1fr_1fr]">
+                    <div class="mt-6 grid gap-5 md:grid-cols-2">
                         <div>
-                            <label class="text-sm font-medium text-slate-300" for="condition_status">Condição</label>
+                            <label class="text-sm font-medium text-slate-300" for="condition_status">Condição do Equipamento</label>
                             <select id="condition_status" name="condition_status" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white focus:border-blue-400 focus:outline-none focus:ring-0">
                                 <option value="novo" <?= $formValues['condition_status'] === 'novo' ? 'selected' : ''; ?>>Novo</option>
                                 <option value="usado" <?= $formValues['condition_status'] === 'usado' ? 'selected' : ''; ?>>Usado</option>
@@ -315,22 +304,6 @@ include __DIR__ . '/../templates/sidebar.php';
                             <label class="text-sm font-medium text-slate-300" for="entry_date">Data de entrada</label>
                             <input type="date" id="entry_date" name="entry_date" value="<?= sanitize($formValues['entry_date']); ?>" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white focus:border-blue-400 focus:outline-none focus:ring-0">
                         </div>
-                        <div class="flex flex-col gap-4">
-                            <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-3">
-                                <span class="text-sm text-slate-200">Equipamento descartado</span>
-                                <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition" :class="form.isDiscarded ? 'bg-red-500/80' : 'bg-slate-700'" role="switch" :aria-checked="form.isDiscarded" @click="toggleDiscarded()">
-                                    <span class="inline-block h-5 w-5 rounded-full bg-white shadow transition" :class="form.isDiscarded ? 'translate-x-5' : 'translate-x-1'"></span>
-                                </button>
-                                <input type="hidden" name="is_discarded" :value="form.isDiscarded ? '1' : '0'">
-                            </div>
-                            <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-3">
-                                <span class="text-sm text-slate-200">Equipamento desvinculado</span>
-                                <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition" :class="form.isUnlinked ? 'bg-emerald-500/80' : 'bg-slate-700'" role="switch" :aria-checked="form.isUnlinked" @click="toggleUnlinked()">
-                                    <span class="inline-block h-5 w-5 rounded-full bg-white shadow transition" :class="form.isUnlinked ? 'translate-x-5' : 'translate-x-1'"></span>
-                                </button>
-                                <input type="hidden" name="is_unlinked" :value="form.isUnlinked ? '1' : '0'">
-                            </div>
-                        </div>
                     </div>
                 </section>
 
@@ -339,7 +312,7 @@ include __DIR__ . '/../templates/sidebar.php';
                         <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                             <div>
                                 <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Seção 3</p>
-                                <h2 class="text-lg font-semibold text-white">Detalhes de software e controle (avançado)</h2>
+                                <h2 class="text-lg font-semibold text-slate-800 dark:text-white">Detalhes de software e controle (avançado)</h2>
                             </div>
                             <p class="text-sm text-slate-400 sm:max-w-sm">Opcional. Expanda para registrar dados internos.</p>
                         </div>
@@ -371,7 +344,7 @@ include __DIR__ . '/../templates/sidebar.php';
                 <section class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-900/30">
                     <header>
                         <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Seção 4</p>
-                        <h2 class="mt-2 text-lg font-semibold text-white">Informações adicionais</h2>
+                        <h2 class="mt-2 text-lg font-semibold text-slate-800 dark:text-white">Informações adicionais</h2>
                         <p class="mt-2 text-sm text-slate-400">Deixe observações específicas sobre o equipamento.</p>
                     </header>
                     <div class="mt-6">
@@ -399,8 +372,6 @@ $equipmentFormInitial = [
     'model' => $formValues['model_id'],
     'mac' => $formValues['mac_address'],
     'assetTag' => $formValues['asset_tag'],
-    'isDiscarded' => $formValues['is_discarded'] === '1',
-    'isUnlinked' => $formValues['is_unlinked'] === '1',
 ];
 $equipmentFormInitialJson = json_encode($equipmentFormInitial, JSON_UNESCAPED_UNICODE);
 $modelOptionsJson = json_encode($modelOptions, JSON_UNESCAPED_UNICODE);
@@ -415,8 +386,6 @@ document.addEventListener('alpine:init', () => {
             model: initial.model ?? '',
             mac: initial.mac ?? '',
             assetTag: initial.assetTag ?? '',
-            isDiscarded: Boolean(initial.isDiscarded),
-            isUnlinked: Boolean(initial.isUnlinked),
         },
         isSubmitting: false,
         get canSubmit() {
@@ -429,14 +398,8 @@ document.addEventListener('alpine:init', () => {
             }
             this.isSubmitting = true;
         },
-        toggleDiscarded() {
-            this.form.isDiscarded = !this.form.isDiscarded;
-        },
-        toggleUnlinked() {
-            this.form.isUnlinked = !this.form.isUnlinked;
-        },
         formatMac(value) {
-            const cleaned = (value || '').replace(/[^0-9a-fA-F]/g, '').slice(0, 12).toUpperCase();
+            const cleaned = (value || '').replace(/[^0-9a-zA-Z]/g, '').slice(0, 12).toUpperCase();
             const parts = cleaned.match(/.{1,2}/g) || [];
             const formatted = parts.join(':');
             this.form.mac = formatted;

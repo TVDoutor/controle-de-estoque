@@ -396,28 +396,28 @@ include __DIR__ . '/../templates/sidebar.php';
         <div class="mx-auto max-w-7xl px-6 pb-12 space-y-8">
             <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <div class="surface-card">
-                    <p class="text-xs font-semibold uppercase tracking-wide surface-muted">Equipamentos cadastrados</p>
-                    <p class="mt-3 text-3xl font-semibold text-white"><?= number_format($inventoryTotals['total'], 0, ',', '.'); ?></p>
-                    <p class="mt-2 text-xs surface-muted"><?= number_format($inventoryTotals['em_estoque'], 0, ',', '.'); ?> disponíveis em estoque</p>
-                    <p class="mt-1 text-xs surface-muted">+<?= number_format($newEquipmentCount, 0, ',', '.'); ?> no período</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Equipamentos cadastrados</p>
+                    <p class="mt-3 text-3xl font-semibold text-slate-900 dark:text-white"><?= number_format($inventoryTotals['total'], 0, ',', '.'); ?></p>
+                    <p class="mt-2 text-xs text-slate-700 dark:text-slate-300"><?= number_format($inventoryTotals['em_estoque'], 0, ',', '.'); ?> disponíveis em estoque</p>
+                    <p class="mt-1 text-xs text-slate-600 dark:text-slate-400">+<?= number_format($newEquipmentCount, 0, ',', '.'); ?> no período</p>
                 </div>
                 <div class="surface-card">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-blue-300">Alocados</p>
-                    <p class="mt-3 text-3xl font-semibold text-blue-50"><?= number_format($inventoryTotals['alocado'], 0, ',', '.'); ?></p>
-                    <p class="mt-2 text-xs text-blue-200/80">Equipamentos atualmente em campo</p>
-                    <p class="mt-1 text-xs text-blue-200/70">Saldo do período: <?= $allocationsSaldo >= 0 ? '+' : ''; ?><?= $allocationsSaldo; ?></p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">Alocados</p>
+                    <p class="mt-3 text-3xl font-semibold text-blue-700 dark:text-blue-300"><?= number_format($inventoryTotals['alocado'], 0, ',', '.'); ?></p>
+                    <p class="mt-2 text-xs text-blue-600 dark:text-blue-300">Equipamentos atualmente em campo</p>
+                    <p class="mt-1 text-xs text-blue-600 dark:text-blue-300">Saldo do período: <?= $allocationsSaldo >= 0 ? '+' : ''; ?><?= $allocationsSaldo; ?></p>
                 </div>
                 <div class="surface-card">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300">Operações (<?= sanitize($rangeLabel); ?>)</p>
-                    <p class="mt-3 text-3xl font-semibold text-emerald-50"><?= number_format($operationsWindowTotals['operacoes'], 0, ',', '.'); ?></p>
-                    <p class="mt-2 text-xs text-emerald-200/80"><?= number_format($operationsWindowTotals['itens'], 0, ',', '.'); ?> itens movimentados</p>
-                    <p class="mt-1 text-xs text-emerald-200/70">Operações: <?= $opsTrendIcon; ?> <?= $opsTrendValue; ?>% vs período anterior</p>
-                    <p class="text-xs text-emerald-200/70">Itens: <?= $itemsTrendIcon; ?> <?= $itemsTrendValue; ?>% vs período anterior</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Operações (<?= sanitize($rangeLabel); ?>)</p>
+                    <p class="mt-3 text-3xl font-semibold text-emerald-700 dark:text-emerald-300"><?= number_format($operationsWindowTotals['operacoes'], 0, ',', '.'); ?></p>
+                    <p class="mt-2 text-xs text-emerald-600 dark:text-emerald-300"><?= number_format($operationsWindowTotals['itens'], 0, ',', '.'); ?> itens movimentados</p>
+                    <p class="mt-1 text-xs text-emerald-600 dark:text-emerald-300">Operações: <?= $opsTrendIcon; ?> <?= $opsTrendValue; ?>% vs período anterior</p>
+                    <p class="text-xs text-emerald-600 dark:text-emerald-300">Itens: <?= $itemsTrendIcon; ?> <?= $itemsTrendValue; ?>% vs período anterior</p>
                 </div>
                 <div class="surface-card">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-violet-300">Clientes cadastrados</p>
-                    <p class="mt-3 text-3xl font-semibold text-violet-50"><?= number_format($clientsTotal, 0, ',', '.'); ?></p>
-                    <p class="mt-2 text-xs text-violet-200/80">Com movimentações registradas</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">Clientes cadastrados</p>
+                    <p class="mt-3 text-3xl font-semibold text-violet-700 dark:text-violet-300"><?= number_format($clientsTotal, 0, ',', '.'); ?></p>
+                    <p class="mt-2 text-xs text-violet-600 dark:text-violet-300">Com movimentações registradas</p>
                 </div>
             </section>
 

@@ -264,13 +264,13 @@ include __DIR__ . '/../templates/sidebar.php';
                     </div>
                 <?php endif; ?>
                 <?php if (user_has_role('admin')): ?>
-                    <div class="rounded-3xl border border-red-500/40 bg-red-500/10 p-6 shadow-xl shadow-red-900/20">
-                        <h2 class="text-lg font-semibold text-red-100">Excluir equipamento</h2>
-                        <p class="text-sm text-red-100/70">Atenção: esta ação é irreversível e removerá o equipamento e registros relacionados.</p>
+                    <div class="rounded-3xl border border-red-500/60 bg-red-500/15 p-6 shadow-xl shadow-red-900/20">
+                        <h2 class="text-lg font-semibold text-red-900 dark:text-red-800 mb-2">Excluir equipamento</h2>
+                        <p class="text-sm text-red-900 dark:text-red-800 mb-4 leading-relaxed">Atenção: esta ação é irreversível e removerá o equipamento e todos os registros relacionados permanentemente.</p>
                         <form method="post" onsubmit="return confirm('Confirma exclusão deste equipamento? Esta ação não pode ser desfeita.');" class="mt-4">
                             <input type="hidden" name="csrf_token" value="<?= sanitize(ensure_csrf_token()); ?>">
                             <input type="hidden" name="action" value="delete">
-                            <button type="submit" class="w-full rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500">Excluir equipamento</button>
+                            <button type="submit" class="w-full rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 transition shadow-lg shadow-red-600/30">Excluir equipamento</button>
                         </form>
                     </div>
                 <?php endif; ?>

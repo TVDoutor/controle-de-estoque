@@ -21,9 +21,6 @@ $roleLabels = [
 $navigation = [
     ['label' => 'Dashboard', 'path' => 'dashboard.php', 'icon' => 'space_dashboard', 'key' => 'dashboard'],
     ['label' => 'Equipamentos', 'path' => 'equipamentos.php', 'icon' => 'inventory_2', 'key' => 'equipamentos'],
-    ['label' => 'Entradas', 'path' => 'entrada_cadastrar.php', 'icon' => 'move_to_inbox', 'key' => 'entradas'],
-    ['label' => 'Saidas', 'path' => 'saida_registrar.php', 'icon' => 'outbox', 'key' => 'saidas'],
-    ['label' => 'Retornos', 'path' => 'retornos.php', 'icon' => 'assignment_return', 'key' => 'retornos'],
     ['label' => 'Clientes', 'path' => 'clientes.php', 'icon' => 'group', 'key' => 'clientes'],
     ['label' => 'Relatorios', 'path' => 'relatorios.php', 'icon' => 'bar_chart', 'key' => 'relatorios'],
     ['label' => 'Configuracoes', 'path' => 'configuracoes.php', 'icon' => 'settings', 'key' => 'configuracoes'],
